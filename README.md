@@ -1,4 +1,4 @@
-# 🚀 AI-Agentic Career Guidance & Opportunity Navigator
+# 🚀 AI-Agentic Career Guidance & Opportunity Navigator (AI-Career-Guidance-Agent)
 
 An AI-driven multi-agent career guidance system designed for personalized academic, career pathway, skill gap, and opportunity navigation.
 
