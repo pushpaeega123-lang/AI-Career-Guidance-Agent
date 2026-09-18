@@ -186,3 +186,1047 @@ body {
     color: var(--text-secondary);
     font-size: 0.875rem;
 }
+
+/* ==========================================================================
+   Shared Dashboard UI Component Library (Forms, Badges, Buttons, Alerts)
+   ========================================================================== */
+
+/* Button System */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+}
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+.btn:active {
+    transform: translateY(0);
+}
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
+    color: #ffffff !important;
+    border: 1px solid rgba(168, 85, 247, 0.4);
+}
+.btn-primary:hover {
+    background: linear-gradient(135deg, #4f46e5, #9333ea);
+    border-color: rgba(168, 85, 247, 0.7);
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+}
+.btn-secondary {
+    background: rgba(51, 65, 85, 0.5);
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color);
+}
+.btn-secondary:hover {
+    background: rgba(71, 85, 105, 0.7);
+    border-color: var(--text-secondary);
+}
+.btn-outline {
+    background: transparent;
+    color: var(--accent-blue) !important;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+}
+.btn-outline:hover {
+    background: rgba(56, 189, 248, 0.1);
+    border-color: var(--accent-blue);
+}
+.btn-sm {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+    border-radius: 6px;
+}
+.btn-block {
+    width: 100%;
+}
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Form Controls */
+.form-group {
+    margin-bottom: 1.15rem;
+    display: flex;
+    flex-direction: column;
+}
+.form-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.2px;
+}
+.required-star {
+    color: #f87171;
+    margin-left: 0.2rem;
+}
+.form-hint {
+    font-size: 0.775rem;
+    color: #64748b;
+    margin-top: 0.3rem;
+}
+.form-input, .form-select, .form-textarea {
+    width: 100%;
+    padding: 0.68rem 0.9rem;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+.form-input::placeholder, .form-textarea::placeholder {
+    color: #64748b;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    background-color: rgba(15, 23, 42, 0.95);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+}
+.form-input.is-invalid {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+.form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    padding-right: 2.25rem;
+    cursor: pointer;
+}
+.form-select option {
+    background: #1e293b;
+    color: #f8fafc;
+}
+
+/* Alert Banners */
+.alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.9rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    animation: fadeIn 0.25s ease-in-out;
+}
+.alert-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+.alert-success {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    color: #34d399;
+}
+.alert-error {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #f87171;
+}
+.alert-info {
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    color: #7dd3fc;
+}
+
+/* Pill Badges & Chips */
+.pill-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    font-size: 0.775rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.2px;
+}
+.pill-skill {
+    background: rgba(56, 189, 248, 0.14);
+    color: #7dd3fc;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+}
+.pill-skill:hover {
+    background: rgba(56, 189, 248, 0.22);
+    border-color: var(--accent-blue);
+}
+.pill-interest {
+    background: rgba(168, 85, 247, 0.14);
+    color: #d8b4fe;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+}
+.pill-interest:hover {
+    background: rgba(168, 85, 247, 0.22);
+    border-color: var(--accent-purple);
+}
+.pill-level {
+    background: rgba(99, 102, 241, 0.18);
+    color: #a5b4fc;
+    border: 1px solid rgba(99, 102, 241, 0.35);
+}
+.pill-location {
+    background: rgba(245, 158, 11, 0.14);
+    color: #fcd34d;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+.pill-tag-interactive {
+    cursor: pointer;
+    transition: transform 0.15s, background-color 0.15s;
+}
+.pill-tag-interactive:hover {
+    transform: scale(1.04);
+}
+
+/* Avatar Circle */
+.avatar-circle {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.25);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   Member 2 - Step 5: Career Guidance UI & Student Dashboard Styles
+   ========================================================================== */
+
+.career-dashboard {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Informational Neutrality Callout */
+.neutrality-disclaimer {
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-left: 4px solid var(--accent-blue);
+    padding: 0.9rem 1.25rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+.neutrality-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+/* Student Profile Selector Bar */
+.profile-selector-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid var(--border-color);
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.selector-identity {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.selector-details h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+.selector-meta {
+    font-size: 0.825rem;
+    color: var(--text-secondary);
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 0.2rem;
+}
+.selector-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Profile Signals Context Card */
+.signals-card {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+.signals-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(51, 65, 85, 0.6);
+}
+.signals-header h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.signals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+}
+.signal-box {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(51, 65, 85, 0.6);
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+}
+.signal-box-title {
+    font-size: 0.775rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+.signal-box-content {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+/* Guidance Limitations Callout Box */
+.limitations-card {
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+}
+.limitations-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: #fbbf24;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.65rem;
+}
+.limitations-list {
+    list-style: none;
+    margin: 0 0 1rem 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+.limitations-list li {
+    font-size: 0.875rem;
+    color: #cbd5e1;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    line-height: 1.45;
+}
+.limitations-list li::before {
+    content: "•";
+    color: #f59e0b;
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+/* Catalogue & Guidance Filter Toolbar */
+.guidance-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.filter-tabs-group {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+.filter-chip {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.45rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.825rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.filter-chip:hover, .filter-chip.active {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+}
+.filter-chip.active {
+    font-weight: 700;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+}
+.search-field-wrapper {
+    flex-grow: 1;
+    max-width: 320px;
+    min-width: 200px;
+}
+
+/* Career Cards Grid & Cards */
+.career-cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.career-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.75rem;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s, border-color 0.2s;
+}
+.career-card:hover {
+    border-color: rgba(99, 102, 241, 0.5);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* Card Header */
+.career-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+.career-card-title-group {
+    flex-grow: 1;
+}
+.career-card-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.45rem;
+}
+.career-card-badges {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Qualitative Alignment Badges */
+.alignment-badge {
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.825rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.badge-alignment-high {
+    background: rgba(16, 185, 129, 0.18);
+    border: 1px solid rgba(16, 185, 129, 0.5);
+    color: #34d399;
+}
+.badge-alignment-moderate {
+    background: rgba(56, 189, 248, 0.18);
+    border: 1px solid rgba(56, 189, 248, 0.5);
+    color: #38bdf8;
+}
+.badge-alignment-exploratory {
+    background: rgba(148, 163, 184, 0.15);
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    color: #94a3b8;
+}
+
+/* Career Description */
+.career-card-desc {
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+/* Why Identified Box (Transparent Explainability) */
+.why-identified-box {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: 10px;
+    padding: 1.15rem 1.35rem;
+    margin-bottom: 1.5rem;
+}
+.why-header {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #a5b4fc;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+.why-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+.why-item {
+    font-size: 0.885rem;
+    color: #e2e8f0;
+    line-height: 1.5;
+    padding-left: 1.25rem;
+    position: relative;
+}
+.why-item::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #38bdf8;
+    font-weight: 700;
+}
+
+/* Skills Split Comparison Box */
+.skills-comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.skills-box {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem 1.15rem;
+}
+.skills-box-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 0.65rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.skills-box-title.have {
+    color: #34d399;
+}
+.skills-box-title.develop {
+    color: #f59e0b;
+}
+.skills-pill-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+.pill-skill-have {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    color: #a7f3d0;
+    padding: 0.25rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.775rem;
+    font-weight: 600;
+}
+.pill-skill-develop {
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px dashed rgba(245, 158, 11, 0.45);
+    color: #fde68a;
+    padding: 0.25rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.775rem;
+    font-weight: 500;
+}
+
+/* Education Considerations */
+.education-box {
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem 1.15rem;
+    margin-bottom: 1.5rem;
+}
+.education-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.education-text {
+    font-size: 0.875rem;
+    color: #cbd5e1;
+    line-height: 1.5;
+    margin-bottom: 0.35rem;
+}
+
+/* Career Progression Pathway (Visual Timeline Stepper) */
+.progression-stepper-container {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.15rem;
+}
+.progression-stepper-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.progression-stepper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+.stepper-node {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 8px;
+    padding: 0.5rem 0.85rem;
+    flex-shrink: 0;
+}
+.node-num {
+    background: rgba(99, 102, 241, 0.3);
+    color: #c084fc;
+    font-size: 0.75rem;
+    font-weight: 700;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.node-text {
+    font-size: 0.825rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+.stepper-arrow {
+    color: var(--text-secondary);
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* Secondary Section: Catalogue Browser */
+.catalogue-accordion {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+}
+.catalogue-summary-toggle {
+    padding: 1.25rem 1.5rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    user-select: none;
+}
+.catalogue-content {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+}
+.catalogue-mini-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+.catalogue-mini-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(51, 65, 85, 0.7);
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+.mini-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+.mini-domain {
+    font-size: 0.75rem;
+    color: var(--accent-blue);
+}
+.mini-desc {
+    font-size: 0.825rem;
+    color: var(--text-secondary);
+    line-height: 1.45;
+}
+
+/* Mobile & Tablet Responsiveness */
+@media (max-width: 768px) {
+    .skills-comparison-grid {
+        grid-template-columns: 1fr;
+    }
+    .profile-selector-bar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .selector-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    .career-card-header {
+        flex-direction: column;
+    }
+    .guidance-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .search-field-wrapper {
+        max-width: 100%;
+    }
+}
+
+/* ==========================================================================
+   Member 2 - Step 7: Education Pathway Dashboard UI Styles
+   ========================================================================== */
+
+.education-dashboard {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Core Visual Pathway Stepper (Stage 1 to 4) */
+.visual-pathway-container {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+.visual-pathway-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.pathway-flow-stages {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    position: relative;
+}
+.flow-stage-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(51, 65, 85, 0.7);
+    border-radius: 10px;
+    padding: 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: relative;
+}
+.flow-stage-card.highlight-stage {
+    border-color: rgba(99, 102, 241, 0.5);
+    background: rgba(99, 102, 241, 0.08);
+}
+.flow-step-tag {
+    font-size: 0.725rem;
+    font-weight: 700;
+    color: #a5b4fc;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.flow-step-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+.flow-step-desc {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+/* Target Career Callout Banner */
+.target-career-banner {
+    background: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    border-left: 4px solid var(--accent-indigo);
+    padding: 1.1rem 1.35rem;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.target-career-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.target-career-info h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #c084fc;
+    margin-bottom: 0.2rem;
+}
+.target-career-info p {
+    font-size: 0.825rem;
+    color: #cbd5e1;
+    margin: 0;
+}
+
+/* Current Education Overview Card */
+.current-edu-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+.current-edu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(51, 65, 85, 0.6);
+}
+.current-edu-header h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.academic-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+}
+.academic-item {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(51, 65, 85, 0.6);
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+}
+.academic-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 0.35rem;
+}
+.academic-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Education Pathway Cards */
+.pathway-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s, border-color 0.2s;
+}
+.pathway-card:hover {
+    border-color: rgba(99, 102, 241, 0.5);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+.pathway-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.pathway-title-block h3 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.4rem;
+}
+.pathway-step-pill {
+    background: rgba(99, 102, 241, 0.18);
+    border: 1px solid rgba(99, 102, 241, 0.45);
+    color: #c084fc;
+    padding: 0.35rem 0.8rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* Multi-Column Details in Pathway Card */
+.pathway-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+.pathway-sub-box {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem 1.15rem;
+}
+.pathway-sub-title {
+    font-size: 0.775rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 0.55rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.pill-higher-study {
+    background: rgba(56, 189, 248, 0.14);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #7dd3fc;
+    padding: 0.25rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.775rem;
+    font-weight: 600;
+}
+.pill-specialization {
+    background: rgba(168, 85, 247, 0.14);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    color: #d8b4fe;
+    padding: 0.25rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.775rem;
+    font-weight: 600;
+}
+
+/* Connected Career Cards Link Block */
+.career-link-chip {
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: var(--accent-blue);
+    padding: 0.3rem 0.7rem;
+    border-radius: 6px;
+    font-size: 0.775rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: all 0.2s ease;
+}
+.career-link-chip:hover {
+    background: rgba(56, 189, 248, 0.2);
+    border-color: var(--accent-blue);
+    transform: translateY(-1px);
+}
+
+/* Responsive Rules for Education Dashboard */
+@media (max-width: 900px) {
+    .pathway-flow-stages {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 600px) {
+    .pathway-flow-stages {
+        grid-template-columns: 1fr;
+    }
+    .pathway-details-grid {
+        grid-template-columns: 1fr;
+    }
+    .target-career-banner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+
+
