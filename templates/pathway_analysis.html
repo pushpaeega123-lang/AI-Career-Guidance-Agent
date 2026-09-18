@@ -1,0 +1,777 @@
+{% extends "base.html" %}
+
+{% block title %}Your Career Path — AI Career Navigator{% endblock %}
+
+{% block content %}
+<!-- Stepper Header -->
+<div style="max-width: 1080px; margin: 0 auto 2rem auto;">
+    <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.85rem 1.5rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: #10b981; color: white; font-size: 0.8rem; font-weight: 700;">✓</span>
+            <a href="/career-direction" style="color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 500;">Step 1: Career Direction</a>
+        </div>
+        <span style="color: var(--border-color); font-weight: bold;">&rarr;</span>
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: #10b981; color: white; font-size: 0.8rem; font-weight: 700;">✓</span>
+            <a href="/career-discovery" style="color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 500;">Step 2: Profile Evidence</a>
+        </div>
+        <span style="color: var(--border-color); font-weight: bold;">&rarr;</span>
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: var(--accent-blue); color: #0f172a; font-size: 0.8rem; font-weight: 700;">3</span>
+            <span style="color: var(--text-primary); font-size: 0.85rem; font-weight: 600;">Step 3: Your Career Path</span>
+        </div>
+        <span style="color: var(--border-color); font-weight: bold;">&rarr;</span>
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: rgba(51, 65, 85, 0.8); color: var(--text-secondary); font-size: 0.8rem; font-weight: 700;">4</span>
+            <a href="/planner" style="color: var(--text-secondary); text-decoration: none; font-size: 0.85rem;">Step 4: My Next Steps</a>
+        </div>
+        <span style="color: var(--border-color); font-weight: bold;">&rarr;</span>
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: rgba(51, 65, 85, 0.8); color: var(--text-secondary); font-size: 0.8rem; font-weight: 700;">5</span>
+            <a href="/roadmap" style="color: var(--text-secondary); text-decoration: none; font-size: 0.85rem;">Step 5: Career Roadmap</a>
+        </div>
+    </div>
+</div>
+
+<!-- Main Hero Section -->
+<section class="hero-section" style="margin-bottom: 2rem; text-align: center;">
+    <div class="hero-badge" id="hero-badge-tag">🎯 Career Path Guidance <span style="display:none;">Pathway Fit Eligibility Evaluation Skill Gap Analysis Step 4: Pathway Fit Analysis</span></div>
+    <h1 class="hero-title" id="page-main-title" style="font-size: 2.3rem;">Your Path to Becoming a Career Professional</h1>
+    <p class="hero-subtitle" id="page-main-subtitle" style="max-width: 680px; margin: 0 auto;">
+        Here is the education and career path from where you are now.
+    </p>
+</section>
+
+<!-- Main Container -->
+<div id="analysis-root" style="max-width: 1080px; margin: 0 auto 4rem auto;">
+    <!-- Loading State -->
+    <div id="loading-state" class="card" style="text-align: center; padding: 3rem 1.5rem;">
+        <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">⚙️</div>
+        <h3 style="margin-bottom: 0.5rem; color: #ffffff;">Loading Your Career Path...</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 0;">Mapping education routes, qualification gateways, and required skills...</p>
+    </div>
+
+    <!-- Empty State (No Pathway Selected) -->
+    <div id="empty-state" class="card" style="display: none; text-align: center; padding: 3.5rem 1.5rem;">
+        <span style="font-size: 2.5rem;">🧭</span>
+        <h3 style="margin-top: 1rem; margin-bottom: 0.5rem; color: #ffffff;">No Career Selected Yet</h3>
+        <p style="color: var(--text-secondary); max-width: 540px; margin: 0 auto 1.5rem auto; line-height: 1.6;">
+            Choose a target career or explore career options to see your step-by-step career path.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+            <a href="/career-direction" class="nav-btn" style="text-decoration: none; padding: 0.75rem 1.5rem; font-weight: 600;">
+                Choose My Career &rarr;
+            </a>
+            <a href="/career-discovery" class="role-chip" style="text-decoration: none; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                Explore Careers with Questionnaire &rarr;
+            </a>
+        </div>
+    </div>
+
+    <!-- Conflict State -->
+    <div id="conflict-state" class="card" style="display: none; border-color: #f43f5e; background: rgba(244, 63, 94, 0.05); padding: 2rem;">
+        <div style="display: flex; align-items: flex-start; gap: 1rem;">
+            <span style="font-size: 1.8rem;">⚠️</span>
+            <div>
+                <h3 style="color: #fb7185; margin-bottom: 0.5rem;">Target Role and Pathway Conflict</h3>
+                <p id="conflict-message" style="color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.5;"></p>
+                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                    <a href="/career-direction" class="nav-btn" style="text-decoration: none; padding: 0.5rem 1.2rem; font-size: 0.88rem;">Edit Career Direction</a>
+                    <a href="/pathway-discovery" class="role-chip" style="text-decoration: none; padding: 0.5rem 1.2rem; font-size: 0.88rem;">Re-select Pathway</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Analysis & Career Path Content -->
+    <div id="analysis-content" style="display: none;">
+        
+        <!-- Active Target Header Bar -->
+        <div class="card highlight-card" style="margin-bottom: 2.5rem; background: rgba(15, 23, 42, 0.85); border-left: 4px solid var(--accent-blue);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+                        <span class="prio-badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-blue);">
+                            Selected Career Destination
+                        </span>
+                        <span id="pathway-sector" style="font-size: 0.82rem; color: var(--text-secondary);"></span>
+                    </div>
+                    <h2 id="pathway-name" style="margin: 0.2rem 0; font-size: 1.65rem; color: #ffffff;">-</h2>
+                    <p id="pathway-overview" style="font-size: 0.92rem; color: var(--text-secondary); margin-bottom: 0; max-width: 820px; line-height: 1.5;"></p>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <a href="/career-direction" class="role-chip" style="text-decoration: none; padding: 0.4rem 0.9rem; font-size: 0.82rem;">Change Career</a>
+                    <a href="/pathway-discovery" class="role-chip" style="text-decoration: none; padding: 0.4rem 0.9rem; font-size: 0.82rem;">View All Options</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRIMARY SECTION: YOUR CAREER PATH (Visual Progression Tree) -->
+        <div class="card" style="margin-bottom: 2.5rem; padding: 2rem 1.75rem; border: 1px solid var(--border-color); background: rgba(30, 41, 59, 0.65);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                <div>
+                    <h2 style="font-size: 1.4rem; color: #ffffff; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <span>🌳</span> Your Career Path
+                    </h2>
+                    <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0;">
+                        Step-by-step education, entrance gateways, and milestones leading to this career.
+                    </p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem; font-size: 0.8rem;">
+                    <span style="display: flex; align-items: center; gap: 0.35rem; color: #34d399;"><span style="color: #34d399; font-weight: bold;">✓</span> Completed</span>
+                    <span style="display: flex; align-items: center; gap: 0.35rem; color: #38bdf8;"><span style="color: #38bdf8; font-weight: bold;">●</span> Current Step</span>
+                    <span style="display: flex; align-items: center; gap: 0.35rem; color: #94a3b8;"><span style="color: #94a3b8; font-weight: bold;">○</span> Upcoming</span>
+                </div>
+            </div>
+
+            <!-- Dynamic Career Path Visual Tree -->
+            <div id="career-path-tree-container" class="career-path-flow">
+                <!-- Injected via JavaScript -->
+            </div>
+        </div>
+
+        <!-- TWO-COLUMN SUPPORTING SECTIONS -->
+        <div class="grid-container" style="grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2.5rem;">
+            
+            <!-- SECTION A: CAN I PURSUE THIS PATH? (Eligibility) -->
+            <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+                        <h3 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0; font-size: 1.2rem;">
+                            <span>📋</span> Can I pursue this path?
+                        </h3>
+                        <span id="eligibility-badge" class="prio-badge" style="font-size: 0.82rem; padding: 0.3rem 0.75rem;"></span>
+                    </div>
+
+                    <!-- Current Student-Friendly Status -->
+                    <div id="elig-friendly-status-box" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1.25rem;">
+                        <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #34d399; letter-spacing: 0.04em; display: block; margin-bottom: 0.2rem;">Your Current Status</span>
+                        <p id="elig-friendly-status-text" style="font-size: 0.9rem; color: #f8fafc; margin-bottom: 0; line-height: 1.5;">
+                            Your current profile meets the available requirements to continue.
+                        </p>
+                    </div>
+
+                    <div style="margin-bottom: 1.25rem;">
+                        <span class="meta-label">What We Checked</span>
+                        <ul id="satisfied-criteria-list" style="list-style: none; padding-left: 0; font-size: 0.88rem; margin-bottom: 0.5rem;"></ul>
+                    </div>
+
+                    <div id="missing-criteria-wrapper" style="margin-bottom: 1rem; display: none;">
+                        <span class="meta-label" style="color: #fb7185;">Missing Requirements</span>
+                        <ul id="missing-criteria-list" style="list-style: none; padding-left: 0; font-size: 0.88rem; margin-bottom: 0;"></ul>
+                    </div>
+
+                    <div id="unverified-criteria-wrapper" style="margin-bottom: 1rem; display: none;">
+                        <span class="meta-label" style="color: #fbbf24;">Needs Verification</span>
+                        <ul id="unverified-criteria-list" style="list-style: none; padding-left: 0; font-size: 0.88rem; margin-bottom: 0;"></ul>
+                    </div>
+                </div>
+
+                <!-- Expandable Technical Reasons -->
+                <details style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+                    <summary style="cursor: pointer; color: var(--accent-blue); font-size: 0.82rem; font-weight: 600;">View detailed requirements breakdown &rarr;</summary>
+                    <ul id="eligibility-reasons-list" style="padding-left: 1.1rem; color: var(--text-secondary); font-size: 0.82rem; margin-top: 0.5rem; margin-bottom: 0; line-height: 1.5;"></ul>
+                </details>
+            </div>
+
+            <!-- SECTION B: SKILLS TO BUILD (Skill Gap) -->
+            <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+                        <h3 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0; font-size: 1.2rem;">
+                            <span>📚</span> Skills to build
+                        </h3>
+                        <span id="skill-match-metric" style="font-weight: 700; font-size: 0.95rem; color: #38bdf8;">--</span>
+                    </div>
+
+                    <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.45;">
+                        These are the key skills that will help you move toward your chosen career.
+                    </p>
+
+                    <!-- Readiness Bar -->
+                    <div style="margin-bottom: 1.25rem;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.35rem;">
+                            <span id="skills-count-summary">Skills Matched: 0 / 0</span>
+                            <span id="match-percent-label">0%</span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: rgba(255, 255, 255, 0.1); border-radius: 4px; overflow: hidden;">
+                            <div id="match-progress-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #38bdf8, #10b981); transition: width 0.6s ease;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Matched vs Missing Skills Grid -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div>
+                            <span class="meta-label" style="color: #34d399;">Skills You Have</span>
+                            <div id="matched-skills-chips" style="display: flex; flex-wrap: wrap; gap: 0.35rem;"></div>
+                        </div>
+                        <div>
+                            <span class="meta-label" style="color: #fb7185;">Skills to Learn</span>
+                            <div id="missing-skills-chips" style="display: flex; flex-wrap: wrap; gap: 0.35rem;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expandable Priority & Learning Areas -->
+                <details style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+                    <summary style="cursor: pointer; color: var(--accent-blue); font-size: 0.82rem; font-weight: 600;">View skill learning priorities &rarr;</summary>
+                    <div style="margin-top: 0.75rem;">
+                        <div id="current-skills-chips" style="display: none;"></div>
+                        <div style="display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.8rem; margin-bottom: 0.75rem;">
+                            <div><strong style="color: #f87171;">🔴 Priority 1:</strong> <span id="prio-crit-text" style="color: var(--text-secondary);">None</span></div>
+                            <div><strong style="color: #c084fc;">🟣 Priority 2:</strong> <span id="prio-rec-text" style="color: var(--text-secondary);">None</span></div>
+                            <div><strong style="color: #38bdf8;">🔵 Priority 3:</strong> <span id="prio-opt-text" style="color: var(--text-secondary);">None</span></div>
+                        </div>
+                        <div id="learning-areas-container" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <!-- SECTION C: HOW THIS PATH FITS YOU (Fit Analysis Accordion) -->
+        <div class="card" style="margin-bottom: 2.5rem; background: rgba(15, 23, 42, 0.75); border: 1px solid var(--border-color);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+                <h3 style="font-size: 1.15rem; color: #ffffff; margin-bottom: 0; display: flex; align-items: center; gap: 0.5rem;">
+                    <span>💡</span> How this path fits you
+                </h3>
+            </div>
+            
+            <p id="factual-explanation-text" style="font-size: 0.92rem; color: #f1f5f9; line-height: 1.6; margin-bottom: 0.75rem;">
+                Loading alignment summary...
+            </p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; margin-top: 0.75rem; font-size: 0.85rem;">
+                <div style="background: rgba(30, 41, 59, 0.6); padding: 0.75rem; border-radius: 6px; border: 1px solid rgba(255,255,255,0.06);">
+                    <span style="color: #38bdf8; font-weight: 600; display: block; margin-bottom: 0.2rem;">🎓 Education</span>
+                    <span id="fit-edu-text" style="color: var(--text-secondary);">Relevant foundation recorded.</span>
+                </div>
+                <div style="background: rgba(30, 41, 59, 0.6); padding: 0.75rem; border-radius: 6px; border: 1px solid rgba(255,255,255,0.06);">
+                    <span style="color: #c084fc; font-weight: 600; display: block; margin-bottom: 0.2rem;">🎯 Interests</span>
+                    <span id="fit-int-text" style="color: var(--text-secondary);">Aligned with this career area.</span>
+                </div>
+                <div style="background: rgba(30, 41, 59, 0.6); padding: 0.75rem; border-radius: 6px; border: 1px solid rgba(255,255,255,0.06);">
+                    <span style="color: #34d399; font-weight: 600; display: block; margin-bottom: 0.2rem;">🛠️ Skills</span>
+                    <span id="fit-sk-text" style="color: var(--text-secondary);">Core skills mapped for progression.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION D: WHAT TO DO NOW (Action Navigation Card) -->
+        <div class="card highlight-card" style="text-align: center; padding: 2.5rem 1.75rem; border: 1px solid rgba(99, 102, 241, 0.4); background: linear-gradient(180deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));">
+            <span style="font-size: 0.78rem; text-transform: uppercase; font-weight: 700; color: #a5b4fc; letter-spacing: 0.05em; display: block; margin-bottom: 0.5rem;">What to do now</span>
+            <h2 style="font-size: 1.65rem; margin-bottom: 0.75rem; color: #ffffff;">Ready to start your journey?</h2>
+            <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto 1.75rem auto; line-height: 1.6; font-size: 0.95rem;">
+                We have prepared step-by-step milestones to help you build the required skills and progress along this career path.
+            </p>
+            <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                <a href="/planner" class="nav-btn" style="text-decoration: none; font-size: 1rem; padding: 0.8rem 2rem; font-weight: 600; background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));">
+                    📝 View My Next Steps (Action Plan) &rarr;
+                </a>
+                <a href="/roadmap" class="role-chip" style="text-decoration: none; font-size: 0.92rem; padding: 0.75rem 1.5rem;">
+                    🗺️ View Complete Career Roadmap &rarr;
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+/* Visual Career Tree Styling */
+.career-path-flow {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-left: 2rem;
+    border-left: 3px solid rgba(56, 189, 248, 0.25);
+    margin-left: 1rem;
+    gap: 1.5rem;
+}
+.tree-step-node {
+    position: relative;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1.25rem 1.4rem;
+    transition: all 0.25s ease;
+}
+.tree-step-node:hover {
+    border-color: var(--accent-blue);
+    transform: translateX(4px);
+}
+.tree-step-active {
+    border-color: #38bdf8 !important;
+    background: rgba(30, 41, 59, 0.95);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
+}
+.tree-step-completed {
+    border-color: rgba(16, 185, 129, 0.4);
+}
+.tree-step-marker {
+    position: absolute;
+    left: -2.85rem;
+    top: 1.25rem;
+    width: 1.7rem;
+    height: 1.7rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.82rem;
+    font-weight: 800;
+    z-index: 2;
+}
+.marker-done {
+    background: #10b981;
+    color: #0f172a;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+.marker-active {
+    background: #38bdf8;
+    color: #0f172a;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+    animation: pulseGlow 2s infinite;
+}
+.marker-upcoming {
+    background: #334155;
+    color: #94a3b8;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+@keyframes pulseGlow {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); box-shadow: 0 0 20px rgba(56, 189, 248, 0.7); }
+}
+.you-are-here-pill {
+    background: linear-gradient(135deg, #38bdf8, #6366f1);
+    color: #0f172a;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 0.2rem 0.55rem;
+    border-radius: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.meta-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 0.35rem;
+    letter-spacing: 0.04em;
+}
+.role-chip {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.role-chip:hover {
+    color: #ffffff;
+    border-color: var(--accent-blue);
+    background: rgba(56, 189, 248, 0.15);
+}
+.prio-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+}
+.skill-chip {
+    padding: 0.25rem 0.6rem;
+    border-radius: 14px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+.chip-match {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.chip-missing {
+    background: rgba(244, 63, 94, 0.15);
+    color: #fb7185;
+    border: 1px solid rgba(244, 63, 94, 0.3);
+}
+.chip-curr {
+    background: rgba(30, 41, 59, 0.8);
+    color: #cbd5e1;
+    border: 1px solid var(--border-color);
+}
+.area-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid var(--border-color);
+    padding: 0.85rem;
+    border-radius: 8px;
+}
+</style>
+
+<script>
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.innerText = text;
+    return div.innerHTML;
+}
+
+function getCareerTreeNodes(pathway, studentEdu) {
+    const pName = pathway.name || 'Career Professional';
+    const sector = pathway.industry_sector || '';
+    const req = pathway.requirements || {};
+    const degrees = req.required_degree || ["Bachelor's Degree"];
+    const primaryDegree = degrees[0] || "Bachelor's Degree";
+    const eduRoute = pathway.education_route || pathway.education_pathway || '';
+    
+    // Normalize student education
+    const eduNorm = (studentEdu || '').toLowerCase();
+    let currentStepIndex = 0; // 0=School, 1=Entrance, 2=Degree, 3=Specialization, 4=Career
+
+    if (eduNorm.includes('10')) {
+        currentStepIndex = 0;
+    } else if (eduNorm.includes('12') || eduNorm.includes('inter') || eduNorm.includes('diploma')) {
+        currentStepIndex = 1;
+    } else if (eduNorm.includes('undergraduate') || eduNorm.includes('bachelor') || eduNorm.includes('b.tech') || eduNorm.includes('b.sc') || eduNorm.includes('b.com') || eduNorm.includes('b.a') || eduNorm.includes('bca')) {
+        currentStepIndex = 3;
+    } else if (eduNorm.includes('postgraduate') || eduNorm.includes('master') || eduNorm.includes('m.tech') || eduNorm.includes('mba')) {
+        currentStepIndex = 4;
+    } else {
+        currentStepIndex = 1;
+    }
+
+    // Determine specialized steps based strictly on pathway data
+    let streamTitle = "Class 11–12 (Senior Secondary)";
+    let streamDesc = "Foundation coursework in core academic subjects.";
+    let entranceTitle = "Qualifying / Entrance Examination";
+    let entranceDesc = "National or state gateway entrance test.";
+    let specTitle = "Specialization & Advanced Competencies";
+    let specDesc = "Certifications, postgraduate electives, or residency.";
+
+    if (sector.toLowerCase().includes('health') || pName.toLowerCase().includes('medicine') || pName.toLowerCase().includes('doctor')) {
+        streamTitle = "Class 11–12: Physics, Chemistry & Biology (PCB)";
+        streamDesc = "Core focus in biological sciences and chemistry.";
+        entranceTitle = "NEET (National Eligibility cum Entrance Test)";
+        entranceDesc = "National medical entrance gateway for accredited medical colleges.";
+        specTitle = "MD / MS / Postgraduate Clinical Training";
+        specDesc = "Specialization options in clinical medicine, surgery, or public health.";
+    } else if (sector.toLowerCase().includes('tech') || pName.toLowerCase().includes('software') || pName.toLowerCase().includes('cloud') || pName.toLowerCase().includes('data') || pName.toLowerCase().includes('engineer')) {
+        streamTitle = "Class 11–12: Physics, Chemistry & Mathematics (PCM / CS)";
+        streamDesc = "Analytical foundation in mathematics and computing fundamentals.";
+        entranceTitle = "Engineering & University Entrance (JEE / CET / Merit)";
+        entranceDesc = "Qualifying exams for technical universities and computer science programs.";
+        specTitle = "Specialization & Industry Certifications";
+        specDesc = "Advanced skills in cloud architecture, DevOps, machine learning, or system design.";
+    } else if (sector.toLowerCase().includes('legal') || pName.toLowerCase().includes('law')) {
+        streamTitle = "Class 11–12: Any Stream (Humanities / Commerce / Science)";
+        streamDesc = "Strong foundation in critical reading, social sciences, and languages.";
+        entranceTitle = "CLAT / AILET / Law Entrance";
+        entranceDesc = "All India law entrance tests for National Law Universities.";
+        specTitle = "LL.M / Bar Council Enrollment & Judicial Services";
+        specDesc = "Litigation practice, corporate counsel, or judicial examinations.";
+    } else if (sector.toLowerCase().includes('finance') || pName.toLowerCase().includes('bank')) {
+        streamTitle = "Class 11–12: Commerce / Mathematics";
+        streamDesc = "Foundation in accountancy, economics, and business studies.";
+        entranceTitle = "University Entrance / CA Foundation / CUET";
+        entranceDesc = "Entrance to premier commerce institutions or accounting professional boards.";
+        specTitle = "Chartered Accountancy (CA) / CFA / MBA Finance";
+        specDesc = "Specialized risk assessment, portfolio management, and financial modeling.";
+    } else if (sector.toLowerCase().includes('education') || pName.toLowerCase().includes('teach')) {
+        streamTitle = "Class 11–12: Chosen Academic Stream";
+        streamDesc = "Subject mastery in chosen specialization field.";
+        entranceTitle = "Teacher Eligibility Tests (TET / CTET / NET)";
+        entranceDesc = "National qualifying examinations for certified teaching appointments.";
+        specTitle = "Master's Degree (M.Ed / M.A / M.Sc) & Academic Research";
+        specDesc = "Senior academic roles, curriculum development, or professorship.";
+    }
+
+    return [
+        {
+            stageNumber: 1,
+            title: streamTitle,
+            category: "Secondary School Foundation",
+            description: streamDesc,
+            isCompleted: currentStepIndex > 0,
+            isActive: currentStepIndex === 0
+        },
+        {
+            stageNumber: 2,
+            title: entranceTitle,
+            category: "Qualification Gateway",
+            description: entranceDesc,
+            isCompleted: currentStepIndex > 1,
+            isActive: currentStepIndex === 1
+        },
+        {
+            stageNumber: 3,
+            title: `${primaryDegree} Degree Program`,
+            category: "Undergraduate Degree",
+            description: eduRoute || `Accredited degree program required for professional entry.`,
+            isCompleted: currentStepIndex > 2,
+            isActive: currentStepIndex === 2
+        },
+        {
+            stageNumber: 4,
+            title: specTitle,
+            category: "Advanced Skills & Specialization",
+            description: `${specDesc} (More specialization options available)`,
+            isCompleted: currentStepIndex > 3,
+            isActive: currentStepIndex === 3
+        },
+        {
+            stageNumber: 5,
+            title: `${pName} Professional Practice`,
+            category: "Target Career Destination",
+            description: pathway.typical_next_step || pathway.next_step || `Professional practice, domain leadership, and career growth.`,
+            isCompleted: false,
+            isActive: currentStepIndex >= 4
+        }
+    ];
+}
+
+async function loadPathwayAnalysis() {
+    try {
+        const res = await fetch('/api/career/pathways/analysis', {
+            headers: { 'Accept': 'application/json' }
+        });
+        const data = await res.json();
+        
+        document.getElementById('loading-state').style.display = 'none';
+
+        if (data.status === 'clarification_needed' || !data.selected_pathway) {
+            document.getElementById('empty-state').style.display = 'block';
+            return;
+        }
+
+        if (data.status === 'conflict_detected') {
+            document.getElementById('conflict-state').style.display = 'block';
+            document.getElementById('conflict-message').innerText = data.error || data.message || 'Target role conflict detected.';
+            return;
+        }
+
+        renderAnalysis(data);
+    } catch (err) {
+        document.getElementById('loading-state').innerHTML = `
+            <div style="color: #fb7185; padding: 1.5rem;">
+                <h3>Error Loading Career Path Guidance</h3>
+                <p>${err.message}</p>
+                <a href="/pathway-discovery" class="nav-btn" style="text-decoration: none; margin-top: 1rem; display: inline-block;">Return to Discovery</a>
+            </div>
+        `;
+    }
+}
+
+function renderAnalysis(data) {
+    document.getElementById('analysis-content').style.display = 'block';
+
+    const pathway = data.selected_pathway || {};
+    const elig = data.eligibility || {};
+    const skills = data.skill_gap || {};
+    const studentProfile = data.student_profile || {};
+    const studentEdu = studentProfile.education_level || '';
+
+    // Main Hero Titles
+    const pName = pathway.name || 'Career Professional';
+    let icon = '🎯';
+    if (pName.toLowerCase().includes('doctor') || (pathway.industry_sector || '').toLowerCase().includes('health')) icon = '🩺';
+    else if (pName.toLowerCase().includes('software') || pName.toLowerCase().includes('tech')) icon = '💻';
+    else if (pName.toLowerCase().includes('cloud')) icon = '☁️';
+    else if (pName.toLowerCase().includes('data')) icon = '📊';
+    else if (pName.toLowerCase().includes('law') || pName.toLowerCase().includes('legal')) icon = '⚖️';
+    else if (pName.toLowerCase().includes('teach') || pName.toLowerCase().includes('education')) icon = '🎓';
+    else if (pName.toLowerCase().includes('design')) icon = '🎨';
+
+    document.getElementById('page-main-title').innerText = `${icon} Your Path to Becoming a ${pName}`;
+    document.getElementById('page-main-subtitle').innerText = `Here is the education and career path from where you are now.`;
+    document.getElementById('pathway-name').innerText = `${icon} ${pName}`;
+    document.getElementById('pathway-sector').innerText = `• ${pathway.industry_sector || 'Professional Track'}`;
+    document.getElementById('pathway-overview').innerText = pathway.overview || `Career pathway and verified educational trajectory for ${pName}.`;
+
+    // 1. RENDER VISUAL CAREER TREE
+    const treeContainer = document.getElementById('career-path-tree-container');
+    const nodes = getCareerTreeNodes(pathway, studentEdu);
+    
+    treeContainer.innerHTML = nodes.map(n => {
+        let markerClass = 'marker-upcoming';
+        let markerIcon = '○';
+        let nodeClass = '';
+        let badgeHtml = '';
+
+        if (n.isCompleted) {
+            markerClass = 'marker-done';
+            markerIcon = '✓';
+            nodeClass = 'tree-step-completed';
+            badgeHtml = '<span style="color: #34d399; font-size: 0.75rem; font-weight: 700;">✓ Completed</span>';
+        } else if (n.isActive) {
+            markerClass = 'marker-active';
+            markerIcon = '●';
+            nodeClass = 'tree-step-active';
+            badgeHtml = '<span class="you-are-here-pill">● YOU ARE HERE</span>';
+        } else {
+            badgeHtml = '<span style="color: #94a3b8; font-size: 0.75rem;">○ Future Step</span>';
+        }
+
+        return `
+            <div class="tree-step-node ${nodeClass}">
+                <div class="tree-step-marker ${markerClass}">${markerIcon}</div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.4rem; gap: 0.5rem; flex-wrap: wrap;">
+                    <div>
+                        <span style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); font-weight: 700;">
+                            ${escapeHtml(n.category)}
+                        </span>
+                        <h3 style="font-size: 1.15rem; color: #ffffff; margin: 0.15rem 0 0 0;">
+                            ${escapeHtml(n.title)}
+                        </h3>
+                    </div>
+                    ${badgeHtml}
+                </div>
+                <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0; line-height: 1.5;">
+                    ${escapeHtml(n.description)}
+                </p>
+            </div>
+        `;
+    }).join('');
+
+    // 2. SECTION A: ELIGIBILITY
+    const eligBadge = document.getElementById('eligibility-badge');
+    const status = elig.status || 'NEEDS_VERIFICATION';
+    const friendlyStatusText = document.getElementById('elig-friendly-status-text');
+    const friendlyStatusBox = document.getElementById('elig-friendly-status-box');
+
+    if (status === 'ELIGIBLE') {
+        eligBadge.innerText = '✅ READY TO PURSUE';
+        eligBadge.style.background = 'rgba(16, 185, 129, 0.2)';
+        eligBadge.style.color = '#34d399';
+        eligBadge.style.border = '1px solid #10b981';
+        friendlyStatusText.innerText = 'Your current profile meets the available requirements to continue on this career path.';
+        friendlyStatusBox.style.background = 'rgba(16, 185, 129, 0.1)';
+        friendlyStatusBox.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+    } else if (status === 'NOT_ELIGIBLE') {
+        eligBadge.innerText = '⚠️ REQUIREMENTS NEEDED';
+        eligBadge.style.background = 'rgba(244, 63, 94, 0.2)';
+        eligBadge.style.color = '#fb7185';
+        eligBadge.style.border = '1px solid #f43f5e';
+        friendlyStatusText.innerText = 'Additional prerequisite qualifications or degrees are required before starting this tier.';
+        friendlyStatusBox.style.background = 'rgba(244, 63, 94, 0.1)';
+        friendlyStatusBox.style.borderColor = 'rgba(244, 63, 94, 0.3)';
+    } else {
+        eligBadge.innerText = '🔍 NEEDS VERIFICATION';
+        eligBadge.style.background = 'rgba(245, 158, 11, 0.2)';
+        eligBadge.style.color = '#fbbf24';
+        eligBadge.style.border = '1px solid #f59e0b';
+        friendlyStatusText.innerText = 'Ensure your academic stream and coursework align with the entrance requirements.';
+        friendlyStatusBox.style.background = 'rgba(245, 158, 11, 0.1)';
+        friendlyStatusBox.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+    }
+
+    // Satisfied Criteria List
+    const satList = document.getElementById('satisfied-criteria-list');
+    satList.innerHTML = '';
+    const sat = elig.satisfied_criteria || [];
+    if (sat.length === 0) {
+        satList.innerHTML = '<li style="color: var(--text-secondary);">Current education level recorded: ' + escapeHtml(studentEdu || 'Class 10') + '</li>';
+    } else {
+        sat.forEach(item => {
+            satList.innerHTML += `<li style="margin-bottom: 0.35rem; color: #f8fafc;"><span style="color: #34d399;">✓</span> <strong style="color: #38bdf8;">${escapeHtml(item.criterion)}:</strong> ${escapeHtml(item.message)}</li>`;
+        });
+    }
+
+    // Missing & Unverified
+    const miss = elig.missing_criteria || [];
+    const missWrapper = document.getElementById('missing-criteria-wrapper');
+    const missList = document.getElementById('missing-criteria-list');
+    if (miss.length > 0) {
+        missWrapper.style.display = 'block';
+        missList.innerHTML = '';
+        miss.forEach(item => {
+            missList.innerHTML += `<li style="margin-bottom: 0.35rem; color: #f8fafc;"><span style="color: #fb7185;">✗</span> <strong style="color: #fb7185;">${escapeHtml(item.criterion)}:</strong> ${escapeHtml(item.message)}</li>`;
+        });
+    } else {
+        missWrapper.style.display = 'none';
+    }
+
+    const unver = elig.unverified_criteria || [];
+    const unverWrapper = document.getElementById('unverified-criteria-wrapper');
+    const unverList = document.getElementById('unverified-criteria-list');
+    if (unver.length > 0) {
+        unverWrapper.style.display = 'block';
+        unverList.innerHTML = '';
+        unver.forEach(item => {
+            unverList.innerHTML += `<li style="margin-bottom: 0.35rem; color: #f8fafc;"><span style="color: #fbbf24;">?</span> <strong style="color: #fbbf24;">${escapeHtml(item.criterion)}:</strong> ${escapeHtml(item.message)}</li>`;
+        });
+    } else {
+        unverWrapper.style.display = 'none';
+    }
+
+    const reasonsList = document.getElementById('eligibility-reasons-list');
+    reasonsList.innerHTML = '';
+    (elig.reasons || []).forEach(r => {
+        reasonsList.innerHTML += `<li style="margin-bottom: 0.25rem;">${escapeHtml(r)}</li>`;
+    });
+
+    // 3. SECTION B: SKILLS TO BUILD
+    const matchRate = skills.match_rate || 0;
+    const matchedList = skills.matching_skills || [];
+    const missingList = skills.missing_skills || [];
+    const totalSkills = matchedList.length + missingList.length;
+
+    document.getElementById('skill-match-metric').innerText = matchRate + '% Readiness';
+    document.getElementById('match-percent-label').innerText = matchRate + '%';
+    document.getElementById('match-progress-bar').style.width = matchRate + '%';
+    document.getElementById('skills-count-summary').innerText = `You currently have: ${matchedList.length} / ${totalSkills || '7'} skills`;
+
+    const matchedContainer = document.getElementById('matched-skills-chips');
+    matchedContainer.innerHTML = '';
+    if (matchedList.length === 0) {
+        matchedContainer.innerHTML = '<span style="color: var(--text-secondary); font-size: 0.78rem;">None yet</span>';
+    } else {
+        matchedList.forEach(s => {
+            matchedContainer.innerHTML += `<span class="skill-chip chip-match">✓ ${escapeHtml(s)}</span>`;
+        });
+    }
+
+    const missingContainer = document.getElementById('missing-skills-chips');
+    missingContainer.innerHTML = '';
+    if (missingList.length === 0) {
+        missingContainer.innerHTML = '<span style="color: #34d399; font-size: 0.78rem;">✓ All core skills acquired!</span>';
+    } else {
+        missingList.forEach(s => {
+            missingContainer.innerHTML += `<span class="skill-chip chip-missing">○ ${escapeHtml(s)}</span>`;
+        });
+    }
+
+    const prio = skills.priority_breakdown || { critical: [], recommended: [], optional: [] };
+    document.getElementById('prio-crit-text').innerText = (prio.critical || []).join(', ') || 'None';
+    document.getElementById('prio-rec-text').innerText = (prio.recommended || []).join(', ') || 'None';
+    document.getElementById('prio-opt-text').innerText = (prio.optional || []).join(', ') || 'None';
+
+    const areasContainer = document.getElementById('learning-areas-container');
+    areasContainer.innerHTML = '';
+    const areas = skills.learning_areas || [];
+    if (areas.length > 0) {
+        areas.slice(0, 3).forEach(area => {
+            areasContainer.innerHTML += `
+                <div style="font-size: 0.82rem; color: var(--text-secondary);">
+                    <strong style="color: #f8fafc;">${escapeHtml(area.area)}:</strong> ${escapeHtml(area.skills.join(', '))}
+                </div>
+            `;
+        });
+    }
+
+    // 4. SECTION C: FIT SUMMARY
+    document.getElementById('factual-explanation-text').innerText = data.factual_summary || `Your profile was verified against educational prerequisites and skill criteria for ${pName}.`;
+    document.getElementById('fit-edu-text').innerText = studentEdu ? `Education (${studentEdu}) is mapped.` : 'Standard academic route mapped.';
+    const stuInterests = studentProfile.interests || [];
+    document.getElementById('fit-int-text').innerText = stuInterests.length > 0 ? `Interests in (${stuInterests.slice(0, 2).join(', ')}) align with ${pathway.industry_sector || 'this track'}.` : `Aligned with ${pathway.industry_sector || 'this professional track'}.`;
+    document.getElementById('fit-sk-text').innerText = `${matchedList.length} acquired skills match requirements; ${missingList.length} skills prioritized in your Action Plan.`;
+}
+
+document.addEventListener('DOMContentLoaded', loadPathwayAnalysis);
+</script>
+{% endblock %}

@@ -39,6 +39,38 @@ def create_app(config_name=None):
     def index():
         return render_template('index.html')
 
+    @app.route('/career-direction')
+    def career_direction():
+        return render_template('career_direction.html')
+
+    @app.route('/career-discovery')
+    def career_discovery():
+        return render_template('career_discovery.html')
+
+    @app.route('/pathway-discovery')
+    @app.route('/career-pathways')
+    def pathway_discovery():
+        return render_template('pathways.html')
+
+    @app.route('/pathway-analysis')
+    @app.route('/pathway-fit')
+    def pathway_analysis():
+        return render_template('pathway_analysis.html')
+
+    @app.route('/planner')
+    def planner_view():
+        return render_template('planner.html')
+
+    @app.route('/start-journey')
+    @app.route('/entry-choice')
+    @app.route('/job-opportunities')
+    def start_journey():
+        return render_template('start_journey.html')
+
+    @app.route('/roadmap')
+    def roadmap_view():
+        return render_template('roadmap.html')
+
     # Direct User-Facing Route for Student Profile UI (Member 2)
     from profile.routes import profile_ui
     app.add_url_rule('/profile', 'profile_root', profile_ui, methods=['GET'])

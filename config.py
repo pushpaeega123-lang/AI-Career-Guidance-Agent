@@ -34,6 +34,7 @@ class ProductionConfig(Config):
 config_by_name = {
     'dev': DevelopmentConfig,
     'test': TestingConfig,
+    'testing': TestingConfig,
     'prod': ProductionConfig,
     'default': DevelopmentConfig
 }

@@ -1,0 +1,316 @@
+{% extends "base.html" %}
+
+{% block title %}Eligibility Verification Engine — AI Career Navigator{% endblock %}
+
+{% block content %}
+<section class="hero-section" style="margin-bottom: 2rem;">
+    <div class="hero-badge">⚡ Deterministic Rule Engine</div>
+    <h1 class="hero-title">Eligibility Verification Engine</h1>
+    <p class="hero-subtitle">
+        Explainable evaluation of student profiles against career pathway & opportunity requirements.
+    </p>
+</section>
+
+<div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; justify-content: center;">
+    <button type="button" class="preset-btn" onclick="loadPreset('eligible')">✨ Preset: Fully Eligible</button>
+    <button type="button" class="preset-btn" onclick="loadPreset('needs_verification')">🔍 Preset: Needs Verification</button>
+    <button type="button" class="preset-btn" onclick="loadPreset('skill_gap')">❌ Preset: Missing Skills</button>
+    <button type="button" class="preset-btn" onclick="loadPreset('ineligible_edu')">🚫 Preset: Ineligible Education</button>
+</div>
+
+<div class="grid-container" style="grid-template-columns: 1fr 1fr; margin-bottom: 2rem;">
+    <!-- Student Profile Card -->
+    <div class="card">
+        <h3 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+            <span>🎓</span> Student Profile
+        </h3>
+        
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <div>
+                <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">Education Level</label>
+                <input type="text" id="stu_edu" placeholder="e.g. Bachelor's Degree / B.Tech" class="custom-input" value="Bachelor of Technology">
+            </div>
+            <div>
+                <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">Degree / Major</label>
+                <input type="text" id="stu_degree" placeholder="e.g. Computer Science" class="custom-input" value="Computer Science and Engineering">
+            </div>
+            <div>
+                <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">Skills (comma-separated)</label>
+                <input type="text" id="stu_skills" placeholder="e.g. Python, Flask, SQL, Docker" class="custom-input" value="Python, Flask, PostgreSQL, Docker, Git">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                <div>
+                    <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">Age</label>
+                    <input type="number" id="stu_age" placeholder="e.g. 23" class="custom-input" value="23">
+                </div>
+                <div>
+                    <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">Experience (Years)</label>
+                    <input type="text" id="stu_exp" placeholder="e.g. 2" class="custom-input" value="2">
+                </div>
+            </div>
+            <div>
+                <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">GPA / Percentage (optional)</label>
+                <input type="text" id="stu_score" placeholder="e.g. 8.5 or 85%" class="custom-input" value="8.5">
+            </div>
+        </div>
+    </div>
+
+    <!-- Opportunity Criteria Card -->
+    <div class="card">
+        <h3 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+            <span>💼</span> Target Opportunity Requirements
+        </h3>
+        
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <div>
+                <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">Required Min Education</label>
+                <input type="text" id="opp_edu" placeholder="e.g. Bachelor's" class="custom-input" value="Bachelor's">
+            </div>
+            <div>
+                <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">Required Degree / Field</label>
+                <input type="text" id="opp_degree" placeholder="e.g. Computer Science, IT" class="custom-input" value="Computer Science, IT">
+            </div>
+            <div>
+                <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">Required Skills (comma-separated)</label>
+                <input type="text" id="opp_skills" placeholder="e.g. Python, SQL" class="custom-input" value="Python, SQL, Flask">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                <div>
+                    <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">Max Age Limit</label>
+                    <input type="number" id="opp_age" placeholder="e.g. 28" class="custom-input" value="28">
+                </div>
+                <div>
+                    <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">Min Experience (Years)</label>
+                    <input type="text" id="opp_exp" placeholder="e.g. 1" class="custom-input" value="1">
+                </div>
+            </div>
+            <div>
+                <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">Min GPA / Cutoff (optional)</label>
+                <input type="text" id="opp_score" placeholder="e.g. 7.0" class="custom-input" value="7.0">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="text-align: center; margin-bottom: 2.5rem;">
+    <button type="button" id="check-btn" class="nav-btn" style="cursor: pointer; border: none; font-size: 1.1rem; padding: 0.75rem 2.5rem; border-radius: 8px;" onclick="runEligibilityCheck()">
+        ⚡ Run Eligibility Evaluation
+    </button>
+</div>
+
+<!-- Results Area -->
+<div id="results-card" class="card" style="display: none; margin-bottom: 3rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+        <h2 style="font-size: 1.4rem;">Evaluation Results</h2>
+        <span id="status-badge" style="font-size: 0.9rem; font-weight: 700; padding: 0.35rem 0.9rem; border-radius: 6px;"></span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+        <div>
+            <h4 style="color: #38bdf8; margin-bottom: 0.5rem;">Satisfied Criteria</h4>
+            <ul id="satisfied-list" style="list-style: none; padding-left: 0; font-size: 0.9rem;"></ul>
+        </div>
+        <div>
+            <h4 style="color: #f43f5e; margin-bottom: 0.5rem;">Missing / Ineligible Criteria</h4>
+            <ul id="missing-list" style="list-style: none; padding-left: 0; font-size: 0.9rem;"></ul>
+        </div>
+    </div>
+
+    <div id="unverified-section" style="margin-bottom: 1.5rem;">
+        <h4 style="color: #fbbf24; margin-bottom: 0.5rem;">Unverified Criteria</h4>
+        <ul id="unverified-list" style="list-style: none; padding-left: 0; font-size: 0.9rem;"></ul>
+    </div>
+
+    <div style="margin-bottom: 1.5rem;">
+        <h4 style="color: var(--text-primary); margin-bottom: 0.5rem;">Decision Explanations</h4>
+        <ul id="reasons-list" style="padding-left: 1.2rem; color: var(--text-secondary); font-size: 0.92rem;"></ul>
+    </div>
+
+    <details style="background: rgba(15, 23, 42, 0.6); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-color);">
+        <summary style="cursor: pointer; color: var(--accent-blue); font-size: 0.85rem; font-weight: 600;">View Raw JSON Response</summary>
+        <pre id="raw-json" style="margin-top: 0.75rem; color: #a5b4fc; font-size: 0.82rem; overflow-x: auto;"></pre>
+    </details>
+</div>
+
+<style>
+.custom-input {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+.custom-input:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+}
+.preset-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.4rem 0.85rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+.preset-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--accent-blue);
+    background: rgba(56, 189, 248, 0.1);
+}
+</style>
+
+<script>
+const PRESETS = {
+    eligible: {
+        stu: { edu: "Bachelor of Technology", degree: "Computer Science and Engineering", skills: "Python, Flask, PostgreSQL, Docker, Git", age: "23", exp: "2", score: "8.5" },
+        opp: { edu: "Bachelor's", degree: "Computer Science, IT", skills: "Python, Flask", age: "28", exp: "1", score: "7.0" }
+    },
+    needs_verification: {
+        stu: { edu: "Bachelor's", degree: "", skills: "", age: "", exp: "", score: "" },
+        opp: { edu: "Bachelor's", degree: "Computer Science", skills: "Python, Docker", age: "25", exp: "2", score: "75%" }
+    },
+    skill_gap: {
+        stu: { edu: "Bachelor's", degree: "Information Technology", skills: "HTML, CSS, JavaScript", age: "22", exp: "1", score: "8.0" },
+        opp: { edu: "Bachelor's", degree: "Information Technology", skills: "HTML, JavaScript, Python, Kubernetes, Rust", age: "30", exp: "1", score: "6.0" }
+    },
+    ineligible_edu: {
+        stu: { edu: "High School (12th Grade)", degree: "Science", skills: "Python, C++", age: "19", exp: "0", score: "90%" },
+        opp: { edu: "Master's Degree", degree: "Computer Science", skills: "Python", age: "30", exp: "2", score: "70%" }
+    }
+};
+
+function loadPreset(key) {
+    const p = PRESETS[key];
+    if (!p) return;
+    document.getElementById('stu_edu').value = p.stu.edu;
+    document.getElementById('stu_degree').value = p.stu.degree;
+    document.getElementById('stu_skills').value = p.stu.skills;
+    document.getElementById('stu_age').value = p.stu.age;
+    document.getElementById('stu_exp').value = p.stu.exp;
+    document.getElementById('stu_score').value = p.stu.score;
+
+    document.getElementById('opp_edu').value = p.opp.edu;
+    document.getElementById('opp_degree').value = p.opp.degree;
+    document.getElementById('opp_skills').value = p.opp.skills;
+    document.getElementById('opp_age').value = p.opp.age;
+    document.getElementById('opp_exp').value = p.opp.exp;
+    document.getElementById('opp_score').value = p.opp.score;
+}
+
+async function runEligibilityCheck() {
+    const btn = document.getElementById('check-btn');
+    btn.disabled = true;
+    btn.innerText = 'Evaluating...';
+
+    const payload = {
+        student_profile: {
+            education_level: document.getElementById('stu_edu').value.trim(),
+            degree: document.getElementById('stu_degree').value.trim(),
+            skills: document.getElementById('stu_skills').value.trim(),
+            age: document.getElementById('stu_age').value.trim(),
+            experience: document.getElementById('stu_exp').value.trim(),
+            score: document.getElementById('stu_score').value.trim()
+        },
+        opportunity: {
+            min_education: document.getElementById('opp_edu').value.trim(),
+            required_degree: document.getElementById('opp_degree').value.trim(),
+            required_skills: document.getElementById('opp_skills').value.trim(),
+            max_age: document.getElementById('opp_age').value.trim(),
+            min_experience: document.getElementById('opp_exp').value.trim(),
+            min_score: document.getElementById('opp_score').value.trim()
+        }
+    };
+
+    try {
+        const res = await fetch('/api/eligibility/check', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        renderResults(data);
+    } catch (err) {
+        alert('Failed to evaluate eligibility: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerText = '⚡ Run Eligibility Evaluation';
+    }
+}
+
+function renderResults(data) {
+    const resultsCard = document.getElementById('results-card');
+    resultsCard.style.display = 'block';
+
+    const badge = document.getElementById('status-badge');
+    if (data.status === 'ELIGIBLE') {
+        badge.innerText = '✅ ELIGIBLE';
+        badge.style.background = 'rgba(16, 185, 129, 0.2)';
+        badge.style.color = '#34d399';
+        badge.style.border = '1px solid #10b981';
+    } else if (data.status === 'NOT_ELIGIBLE') {
+        badge.innerText = '❌ NOT ELIGIBLE';
+        badge.style.background = 'rgba(244, 63, 94, 0.2)';
+        badge.style.color = '#fb7185';
+        badge.style.border = '1px solid #f43f5e';
+    } else {
+        badge.innerText = '🔍 NEEDS VERIFICATION';
+        badge.style.background = 'rgba(245, 158, 11, 0.2)';
+        badge.style.color = '#fbbf24';
+        badge.style.border = '1px solid #f59e0b';
+    }
+
+    // Render Satisfied List
+    const satList = document.getElementById('satisfied-list');
+    satList.innerHTML = '';
+    if (data.satisfied_criteria.length === 0) {
+        satList.innerHTML = '<li style="color: var(--text-secondary);">None evaluated</li>';
+    } else {
+        data.satisfied_criteria.forEach(item => {
+            satList.innerHTML += `<li style="margin-bottom: 0.4rem;">✓ <strong style="color: #e2e8f0;">${item.criterion}:</strong> ${item.message}</li>`;
+        });
+    }
+
+    // Render Missing List
+    const missList = document.getElementById('missing-list');
+    missList.innerHTML = '';
+    if (data.missing_criteria.length === 0) {
+        missList.innerHTML = '<li style="color: var(--text-secondary);">None</li>';
+    } else {
+        data.missing_criteria.forEach(item => {
+            missList.innerHTML += `<li style="margin-bottom: 0.4rem;">✗ <strong style="color: #e2e8f0;">${item.criterion}:</strong> ${item.message}</li>`;
+        });
+    }
+
+    // Render Unverified List
+    const unverList = document.getElementById('unverified-list');
+    unverList.innerHTML = '';
+    const unverSec = document.getElementById('unverified-section');
+    if (data.unverified_criteria.length === 0) {
+        unverSec.style.display = 'none';
+    } else {
+        unverSec.style.display = 'block';
+        data.unverified_criteria.forEach(item => {
+            unverList.innerHTML += `<li style="margin-bottom: 0.4rem;">? <strong style="color: #e2e8f0;">${item.criterion}:</strong> ${item.message}</li>`;
+        });
+    }
+
+    // Render Reasons
+    const reasonsList = document.getElementById('reasons-list');
+    reasonsList.innerHTML = '';
+    data.reasons.forEach(r => {
+        reasonsList.innerHTML += `<li style="margin-bottom: 0.25rem;">${r}</li>`;
+    });
+
+    // Render Raw JSON
+    document.getElementById('raw-json').innerText = JSON.stringify(data, null, 2);
+
+    resultsCard.scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+{% endblock %}

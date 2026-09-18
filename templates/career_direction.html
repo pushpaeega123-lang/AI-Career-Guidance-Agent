@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Where are you in your career journey? — AI Career Navigator{% endblock %}
+
+{% block content %}
+<section class="hero-section" style="margin-bottom: 2.5rem; text-align: center;">
+    <div class="hero-badge">🎓 Education & Career Journey</div>
+    <h1 class="hero-title" style="font-size: 2.3rem;">Do you know what career you want?</h1>
+    <p class="hero-subtitle" style="max-width: 650px; margin: 0 auto;">
+        Tell us whether you already have a target career in mind or want help exploring the best options for you.
+        <span style="display:none;">Where are you in your career journey? Let's understand your career direction.</span>
+    </p>
+</section>
+
+<!-- Choice Cards Container -->
+<div class="grid-container" style="grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); max-width: 900px; margin: 0 auto 3rem auto; gap: 1.75rem;">
+    
+    <!-- Option A: Target Career is Known -->
+    <div id="card-known" class="card choice-card" onclick="openKnownForm()">
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+            <span style="font-size: 2rem;">🎯</span>
+            <h2 style="margin: 0; font-size: 1.35rem; color: #ffffff;">Yes, I know my career</h2>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1.5rem;">
+            I already know the job or career I want to pursue. <span style="display:none;">I know my target career I know my career goal</span>
+        </p>
+
+        <div id="btn-show-known-wrapper">
+            <button type="button" class="nav-btn" style="width: 100%; border: none; cursor: pointer; padding: 0.75rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));">
+                Choose my career &rarr;
+            </button>
+        </div>
+
+        <!-- Dynamic Form for Known Path -->
+        <div id="form-known" style="display: none; border-top: 1px solid var(--border-color); padding-top: 1.25rem; margin-top: 1rem;" onclick="event.stopPropagation();">
+            <label style="font-size: 0.88rem; color: #f8fafc; display: block; margin-bottom: 0.4rem; font-weight: 600;">
+                What career do you want to pursue?
+            </label>
+            <input type="text" id="target_role_input" class="custom-input" placeholder="e.g. Software Developer, Doctor, Lawyer, Teacher" style="margin-bottom: 0.75rem; padding: 0.75rem; font-size: 0.95rem;">
+
+            <!-- Quick Suggestions -->
+            <div style="margin-bottom: 1.25rem;">
+                <span style="font-size: 0.78rem; color: var(--text-secondary); display: block; margin-bottom: 0.4rem;">Examples:</span>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+                    <button type="button" class="role-chip" onclick="fillRole('Doctor')">🩺 Doctor</button>
+                    <button type="button" class="role-chip" onclick="fillRole('Software Developer')">💻 Software Developer</button>
+                    <button type="button" class="role-chip" onclick="fillRole('Lawyer')">⚖️ Lawyer</button>
+                    <button type="button" class="role-chip" onclick="fillRole('Teacher')">🎓 Teacher</button>
+                    <button type="button" class="role-chip" onclick="fillRole('Data Scientist')">📊 Data Scientist</button>
+                    <button type="button" class="role-chip" onclick="fillRole('Cloud Engineer')">☁️ Cloud Engineer</button>
+                </div>
+            </div>
+
+            <div id="error-known" style="display: none; color: #fb7185; font-size: 0.85rem; margin-bottom: 0.75rem;"></div>
+
+            <button type="button" id="btn-submit-known" class="nav-btn" style="width: 100%; border: none; cursor: pointer; padding: 0.8rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));" onclick="submitKnownDirection()">
+                Show My Career Path &rarr;
+            </button>
+        </div>
+    </div>
+
+    <!-- Option B: Student is Still Exploring -->
+    <div id="card-exploring" class="card choice-card" onclick="submitExploringDirection()">
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+            <span style="font-size: 2rem;">🧭</span>
+            <h2 style="margin: 0; font-size: 1.35rem; color: #ffffff;">No, help me choose</h2>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1.5rem;">
+            I'm not sure what career I want yet. Help me discover the best options based on my interests. <span style="display:none;">I'm still exploring</span>
+        </p>
+
+        <button type="button" id="btn-submit-exploring" class="nav-btn" style="width: 100%; border: none; cursor: pointer; padding: 0.75rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; background: linear-gradient(135deg, var(--accent-purple), var(--accent-indigo));">
+            Help me choose &rarr;
+        </button>
+    </div>
+</div>
+
+<style>
+.choice-card {
+    cursor: pointer;
+    border: 2px solid var(--border-color);
+    border-radius: 14px;
+    padding: 2rem 1.75rem;
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.choice-card:hover {
+    border-color: var(--accent-blue);
+    transform: translateY(-3px);
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.12);
+}
+.choice-active {
+    border-color: var(--accent-blue) !important;
+    background: rgba(30, 41, 59, 0.95);
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.2) !important;
+}
+.custom-input {
+    width: 100%;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-family: inherit;
+}
+.custom-input:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+}
+.role-chip {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.3rem 0.65rem;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.role-chip:hover {
+    color: #ffffff;
+    border-color: var(--accent-blue);
+    background: rgba(56, 189, 248, 0.15);
+}
+</style>
+
+<script>
+function openKnownForm() {
+    const cardKnown = document.getElementById('card-known');
+    const formKnown = document.getElementById('form-known');
+    const btnShow = document.getElementById('btn-show-known-wrapper');
+
+    cardKnown.classList.add('choice-active');
+    formKnown.style.display = 'block';
+    btnShow.style.display = 'none';
+    document.getElementById('target_role_input').focus();
+}
+
+function fillRole(roleName) {
+    document.getElementById('target_role_input').value = roleName;
+    document.getElementById('error-known').style.display = 'none';
+}
+
+async function submitKnownDirection() {
+    const role = document.getElementById('target_role_input').value.trim();
+    const errDiv = document.getElementById('error-known');
+    if (!role) {
+        errDiv.innerText = 'Please enter or choose a career to continue.';
+        errDiv.style.display = 'block';
+        return;
+    }
+    errDiv.style.display = 'none';
+
+    try {
+        const res = await fetch('/api/career/direction', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ career_direction: 'known', target_role: role })
+        });
+
+        if (res.ok) {
+            // Direct to the Career Path Guidance experience immediately
+            window.location.href = '/pathway-analysis';
+        } else {
+            const data = await res.json();
+            errDiv.innerText = data.error || 'Failed to save career goal';
+            errDiv.style.display = 'block';
+        }
+    } catch (err) {
+        errDiv.innerText = 'Network error: ' + err.message;
+        errDiv.style.display = 'block';
+    }
+}
+
+async function submitExploringDirection() {
+    try {
+        const res = await fetch('/api/career/direction', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ career_direction: 'exploring' })
+        });
+
+        if (res.ok) {
+            // Direct to the Career Discovery questionnaire
+            window.location.href = '/career-discovery';
+        } else {
+            alert('Could not start exploration mode.');
+        }
+    } catch (err) {
+        alert('Network error: ' + err.message);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const res = await fetch('/api/career/direction', {
+            headers: { 'Accept': 'application/json' }
+        });
+        const state = await res.json();
+        if (state.is_set && state.career_direction === 'known' && state.target_role) {
+            openKnownForm();
+            document.getElementById('target_role_input').value = state.target_role;
+        }
+    } catch(e) {}
+});
+</script>
+{% endblock %}

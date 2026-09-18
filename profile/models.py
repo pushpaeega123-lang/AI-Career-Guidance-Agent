@@ -5,8 +5,9 @@ from db import db
 class StudentProfile(db.Model):
     """
     Student Profile Model.
-    Supports comprehensive academic, skill, interest, and career preference intelligence.
-    Maintains compatibility with downstream ActionPlan foreign keys (student_profiles.id).
+    Supports comprehensive academic, skill, interest, work style, and career preference intelligence.
+    Maintains compatibility with downstream ActionPlan foreign keys (student_profiles.id)
+    and Member 4 exploration & pathway discovery workflows.
     """
     __tablename__ = 'student_profiles'
 
@@ -19,6 +20,9 @@ class StudentProfile(db.Model):
     education_level = db.Column(db.String(100), nullable=True) # e.g. Undergraduate, Diploma, Postgraduate, High School
     qualification = db.Column(db.String(150), nullable=True)   # Current qualification / summary
 
+    # Member 4 Exploration subjects
+    subjects_json = db.Column(db.Text, nullable=True)
+
     # Detailed Educational Stages (JSON text for schema stability and nested flexibility)
     degree_details_json = db.Column(db.Text, nullable=True)
     diploma_details_json = db.Column(db.Text, nullable=True)
@@ -27,6 +31,9 @@ class StudentProfile(db.Model):
     # Skills & Interests Intelligence
     skills_json = db.Column(db.Text, nullable=True)
     interests_json = db.Column(db.Text, nullable=True)
+    work_preferences_json = db.Column(db.Text, nullable=True)
+    career_preferences_json = db.Column(db.Text, nullable=True)
+    additional_information = db.Column(db.Text, nullable=True)
 
     # Goals and Geographical / Work Preferences
     career_goals = db.Column(db.Text, nullable=True)
@@ -39,6 +46,15 @@ class StudentProfile(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # --- JSON Helper Methods ---
+    def _parse_json_list(self, raw_json):
+        if not raw_json:
+            return []
+        try:
+            val = json.loads(raw_json)
+            return val if isinstance(val, list) else [val]
+        except Exception:
+            return [raw_json]
+
     @staticmethod
     def _parse_json_field(val, default_type=list):
         if not val:
@@ -76,6 +92,42 @@ class StudentProfile(db.Model):
             self.interests_json = json.dumps(items)
         else:
             self.interests_json = json.dumps([])
+
+    def get_subjects(self):
+        return self._parse_json_field(self.subjects_json, list)
+
+    def set_subjects(self, subjects):
+        if isinstance(subjects, list):
+            self.subjects_json = json.dumps([str(s).strip() for s in subjects if str(s).strip()])
+        elif isinstance(subjects, str):
+            items = [s.strip() for s in subjects.split(',') if s.strip()]
+            self.subjects_json = json.dumps(items)
+        else:
+            self.subjects_json = json.dumps([])
+
+    def get_work_preferences(self):
+        return self._parse_json_field(self.work_preferences_json, list)
+
+    def set_work_preferences(self, prefs):
+        if isinstance(prefs, list):
+            self.work_preferences_json = json.dumps([str(p).strip() for p in prefs if str(p).strip()])
+        elif isinstance(prefs, str):
+            items = [p.strip() for p in prefs.split(',') if p.strip()]
+            self.work_preferences_json = json.dumps(items)
+        else:
+            self.work_preferences_json = json.dumps([])
+
+    def get_career_preferences(self):
+        return self._parse_json_field(self.career_preferences_json, list)
+
+    def set_career_preferences(self, prefs):
+        if isinstance(prefs, list):
+            self.career_preferences_json = json.dumps([str(p).strip() for p in prefs if str(p).strip()])
+        elif isinstance(prefs, str):
+            items = [p.strip() for p in prefs.split(',') if p.strip()]
+            self.career_preferences_json = json.dumps(items)
+        else:
+            self.career_preferences_json = json.dumps([])
 
     def get_preferred_locations(self):
         return self._parse_json_field(self.preferred_locations_json, list)
@@ -153,15 +205,19 @@ class StudentProfile(db.Model):
             "email": self.email,
             "education_level": self.education_level or "",
             "qualification": self.qualification or "",
+            "subjects": self.get_subjects(),
             "degree_details": self.get_degree_details(),
             "diploma_details": self.get_diploma_details(),
             "pg_details": self.get_pg_details(),
             "skills": self.get_skills(),
             "interests": self.get_interests(),
+            "work_preferences": self.get_work_preferences(),
+            "career_preferences": self.get_career_preferences(),
             "career_goals": self.career_goals or "",
             "location": self.location or "",
             "preferred_locations": self.get_preferred_locations(),
             "preferences": self.get_preferences(),
+            "additional_information": self.additional_information or "",
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None
         }

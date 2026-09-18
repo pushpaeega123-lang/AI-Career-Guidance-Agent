@@ -4,10 +4,15 @@
 <section class="hero-section">
     <div class="hero-badge">🤖 Multi-Agent AI Platform</div>
     <h1 class="hero-title">AI-Agentic Career Guidance & Opportunity Navigator</h1>
-    <p class="hero-subtitle">
+    <p class="hero-subtitle" style="margin-bottom: 1.5rem;">
         Empowering students with personalized career intelligence, pathway recommendations, 
         opportunity tracking, and automated agent orchestrations.
     </p>
+    <div>
+        <a href="/start-journey" class="nav-btn" style="text-decoration: none; font-size: 1.05rem; padding: 0.75rem 2rem; border-radius: 8px; display: inline-block;">
+            🚀 Start Career Journey &rarr;
+        </a>
+    </div>
 </section>
 
 <section id="modules" class="modules-grid">
@@ -17,8 +22,9 @@
             <span class="card-tag tag-dev1">Dev 1</span>
             <h3>1. Student Intelligence</h3>
             <p>Profile building, interest extraction & academic background analysis.</p>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
                 <a href="/api/profile/ui" class="card-link" style="color: var(--accent-indigo);">Manage Profile &rarr;</a>
+                <a href="/career-discovery" class="card-link">Questionnaire &rarr;</a>
                 <a href="/api/profile/health" class="card-link" style="font-size: 0.75rem; color: var(--text-secondary);">Health &rarr;</a>
             </div>
         </div>
@@ -26,8 +32,10 @@
             <span class="card-tag tag-dev2">Dev 2</span>
             <h3>2. Career Pathways</h3>
             <p>Interactive career & degree maps with future-oriented progression pathways.</p>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
                 <a href="/career/guidance" class="card-link" style="color: var(--accent-indigo);">Career Dashboard &rarr;</a>
+                <a href="/career-direction" class="card-link">Career Direction &rarr;</a>
+                <a href="/pathway-discovery" class="card-link" style="color: var(--accent-blue);">Pathways &rarr;</a>
                 <a href="/api/career/health" class="card-link" style="font-size: 0.75rem; color: var(--text-secondary);">Health &rarr;</a>
             </div>
         </div>
@@ -35,8 +43,9 @@
             <span class="card-tag tag-dev2">Dev 2</span>
             <h3>3. Education Pathways</h3>
             <p>Courses, certifications, and higher-education recommendations.</p>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
                 <a href="/education/pathways" class="card-link" style="color: var(--accent-indigo);">Education Dashboard &rarr;</a>
+                <a href="/pathway-discovery" class="card-link">Explore Routes &rarr;</a>
                 <a href="/api/education/health" class="card-link" style="font-size: 0.75rem; color: var(--text-secondary);">Health &rarr;</a>
             </div>
         </div>
@@ -44,37 +53,55 @@
             <span class="card-tag tag-dev3">Dev 3</span>
             <h3>4. Opportunity Aggregator</h3>
             <p>Jobs, Government Jobs, Exams, Internships, Apprenticeships & Scholarships.</p>
-            <a href="/api/opportunities/health" class="card-link">Endpoint Status &rarr;</a>
+            <div style="display: flex; gap: 1rem;">
+                <a href="/roadmap" class="card-link">View in Roadmap &rarr;</a>
+                <a href="/api/opportunities/health" class="card-link" style="color: var(--text-secondary);">Health &rarr;</a>
+            </div>
         </div>
         <div class="card">
             <span class="card-tag tag-dev2">Dev 2</span>
             <h3>5. Eligibility Engine</h3>
-            <p>Automated criteria and prerequisite verification logic.</p>
-            <a href="/api/eligibility/health" class="card-link">Endpoint Status &rarr;</a>
+            <p>Deterministic criteria and prerequisite verification logic.</p>
+            <div style="display: flex; gap: 1rem;">
+                <a href="/pathway-analysis" class="card-link">Fit Analysis &rarr;</a>
+                <a href="/api/eligibility/health" class="card-link" style="color: var(--text-secondary);">Health &rarr;</a>
+            </div>
         </div>
         <div class="card">
             <span class="card-tag tag-dev3">Dev 3</span>
             <h3>6. Skill Gap Analysis</h3>
             <p>Dynamic assessment comparing current vs target skill requirements.</p>
-            <a href="/api/skill-gap/health" class="card-link">Endpoint Status &rarr;</a>
+            <div style="display: flex; gap: 1rem;">
+                <a href="/pathway-analysis" class="card-link">Analyze Fit &rarr;</a>
+                <a href="/api/skill-gap/health" class="card-link" style="color: var(--text-secondary);">Health &rarr;</a>
+            </div>
         </div>
         <div class="card">
             <span class="card-tag tag-dev4">Dev 4</span>
             <h3>7. Career Action Planner</h3>
             <p>Milestone tracking and step-by-step personalized action roadmaps.</p>
-            <a href="/api/planner/health" class="card-link">Endpoint Status &rarr;</a>
+            <div style="display: flex; gap: 1rem;">
+                <a href="/planner" class="card-link">Action Planner &rarr;</a>
+                <a href="/api/planner/health" class="card-link" style="color: var(--text-secondary);">Health &rarr;</a>
+            </div>
         </div>
         <div class="card">
             <span class="card-tag tag-dev4">Dev 4</span>
-            <h3>8. Notifications</h3>
-            <p>Personalized alerts for deadlines, exams, and new opportunity matches.</p>
-            <a href="/api/notifications/health" class="card-link">Endpoint Status &rarr;</a>
+            <h3>8. Unified Roadmap</h3>
+            <p>End-to-end 6-stage connected career visualizer.</p>
+            <div style="display: flex; gap: 1rem;">
+                <a href="/roadmap" class="card-link">Career Roadmap &rarr;</a>
+                <a href="/api/notifications/health" class="card-link" style="color: var(--text-secondary);">Alerts &rarr;</a>
+            </div>
         </div>
         <div class="card highlight-card">
             <span class="card-tag tag-dev4">Dev 4</span>
             <h3>9. Agent Orchestrator</h3>
             <p>Multi-agent workflow routing & automated reasoning engine.</p>
-            <a href="/api/agents/health" class="card-link">Endpoint Status &rarr;</a>
+            <div style="display: flex; gap: 1rem;">
+                <a href="/api/agents/demo" class="card-link">Live Console &rarr;</a>
+                <a href="/api/agents/health" class="card-link" style="color: var(--text-secondary);">Health &rarr;</a>
+            </div>
         </div>
     </div>
 </section>

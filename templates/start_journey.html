@@ -1,0 +1,752 @@
+{% extends "base.html" %}
+
+{% block title %}What do you want to do? — AI Career Navigator{% endblock %}
+
+{% block content %}
+<!-- Main Header -->
+<section class="hero-section" style="margin-bottom: 2rem; text-align: center;">
+    <div class="hero-badge">🚀 Student Journey Entry</div>
+    <h1 class="hero-title" style="font-size: 2.3rem; margin-bottom: 0.75rem;">What do you want to do?</h1>
+    <p class="hero-subtitle" style="max-width: 680px; margin: 0 auto; font-size: 1.05rem;">
+        Choose whether you want to explore education and career pathways or match with verified job opportunities tailored to your sector, education level, and skills.
+    </p>
+</section>
+
+<!-- First-Level Choice Cards -->
+<div id="entry-choice-container" class="grid-container" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); max-width: 900px; margin: 0 auto 2.5rem auto; gap: 1.75rem;">
+
+    <!-- Option 1: Continue Education -->
+    <div id="card-education" class="card choice-card" onclick="chooseEducation()">
+        <div>
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <span style="font-size: 2.2rem;">🎓</span>
+                <h2 style="margin: 0; font-size: 1.35rem; color: #ffffff;">Continue Education</h2>
+            </div>
+            <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1.5rem;">
+                Explore education and career pathways, discover high-growth fields, and view step-by-step career roadmaps.
+            </p>
+        </div>
+        <a href="/career-direction" class="nav-btn choice-action-btn" style="text-decoration: none; text-align: center; display: block; background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));">
+            Continue Education &rarr;
+        </a>
+    </div>
+
+    <!-- Option 2: Start Working -->
+    <div id="card-working" class="card choice-card" onclick="chooseWorking()">
+        <div>
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <span style="font-size: 2.2rem;">💼</span>
+                <h2 style="margin: 0; font-size: 1.35rem; color: #ffffff;">Start Working</h2>
+            </div>
+            <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1.5rem;">
+                Explore job opportunities based on your current qualification
+            </p>
+        </div>
+        <button type="button" class="nav-btn choice-action-btn" style="width: 100%; border: none; cursor: pointer; background: linear-gradient(135deg, #10b981, #059669);">
+            Explore Job Opportunities &rarr;
+        </button>
+    </div>
+
+</div>
+
+<!-- Job Flow Section (Revealed when Start Working is chosen) -->
+<div id="job-flow-section" style="display: none; max-width: 1000px; margin: 0 auto 3rem auto;">
+    
+    <!-- Flow Header & Back Switcher -->
+    <div class="card" style="margin-bottom: 1.5rem; padding: 1.35rem 1.6rem; border: 1px solid var(--border-color); background: rgba(30, 41, 59, 0.7);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <div style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.2rem 0.6rem; border-radius: 6px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.35rem;">
+                    💼 Direct Job & Opportunity Matching
+                </div>
+                <h2 style="font-size: 1.4rem; color: #ffffff; margin: 0;">Find Opportunities by Sector & Skills</h2>
+            </div>
+            <button type="button" onclick="showChoiceScreen()" style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-color); color: var(--text-secondary); padding: 0.45rem 0.9rem; border-radius: 8px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s ease;">
+                &larr; Switch Entry Option
+            </button>
+        </div>
+    </div>
+
+    <!-- Category Selector: Government vs Private -->
+    <div style="margin-bottom: 1.5rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+            
+            <!-- Category A: Government Jobs -->
+            <div id="cat-govt" class="card category-card active-cat" onclick="switchCategory('govt_job')">
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.35rem;">
+                    <span style="font-size: 1.75rem;">🏛️</span>
+                    <div>
+                        <h4 style="margin: 0; font-size: 1.15rem; color: #ffffff;">Government Jobs</h4>
+                        <span style="font-size: 0.76rem; color: #fbbf24; font-weight: 500;">Public Sector, Civil Services & Exams</span>
+                    </div>
+                </div>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0; line-height: 1.4;">
+                    Explore verified central & state government exams, staff selection, railways, and defense recruitments.
+                </p>
+            </div>
+
+            <!-- Category B: Private Jobs -->
+            <div id="cat-private" class="card category-card" onclick="switchCategory('private_job')">
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.35rem;">
+                    <span style="font-size: 1.75rem;">🏢</span>
+                    <div>
+                        <h4 style="margin: 0; font-size: 1.15rem; color: #ffffff;">Private Jobs</h4>
+                        <span style="font-size: 0.76rem; color: #34d399; font-weight: 500;">Corporate, IT, Finance & Industry Roles</span>
+                    </div>
+                </div>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0; line-height: 1.4;">
+                    Explore verified industry entry-level roles across IT, data, finance, sales, administration, and engineering.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Interactive Filter & Matching Controls Card -->
+    <div class="card" style="margin-bottom: 2rem; padding: 1.5rem 1.75rem; border: 1px solid var(--border-color); background: rgba(30, 41, 59, 0.75);">
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 1.25rem;">
+            
+            <!-- Filter 1: Dynamic Sector Dropdown -->
+            <div>
+                <label for="sector-dropdown" style="display: block; font-size: 0.88rem; font-weight: 600; color: #ffffff; margin-bottom: 0.45rem;">
+                    🏢 Sector: <span id="sector-count-label" style="font-size: 0.8rem; color: var(--accent-blue); font-weight: 500;">Available Sectors (Loading...)</span>
+                </label>
+                <select id="sector-dropdown" onchange="onSectorChanged()" class="styled-select" style="width: 100%; padding: 0.65rem 0.9rem; border-radius: 8px; background: #0f172a; border: 1px solid var(--border-color); color: #ffffff; font-size: 0.9rem;">
+                    <option value="all">All Sectors — (Loading jobs...)</option>
+                </select>
+            </div>
+
+            <!-- Filter 2: Education Level Selector -->
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
+                    <label for="education-dropdown" style="font-size: 0.88rem; font-weight: 600; color: #ffffff; margin: 0;">
+                        🎓 Education Level:
+                    </label>
+                    <span id="detected-qual-badge" style="display: none; font-size: 0.75rem; color: var(--accent-blue); background: rgba(56, 189, 248, 0.1); padding: 0.1rem 0.4rem; border-radius: 4px; border: 1px solid rgba(56, 189, 248, 0.25);">
+                        Auto-detected
+                    </span>
+                </div>
+                <select id="education-dropdown" onchange="onFilterChanged()" class="styled-select" style="width: 100%; padding: 0.65rem 0.9rem; border-radius: 8px; background: #0f172a; border: 1px solid var(--border-color); color: #ffffff; font-size: 0.9rem;">
+                    <option value="Class 10">Class 10 (Matriculation / Secondary)</option>
+                    <option value="Class 12">Class 12 (Higher Secondary / Intermediate)</option>
+                    <option value="Diploma">Diploma / Polytechnic / Technical Cert</option>
+                    <option value="Undergraduate">Undergraduate / Degree / B.Tech / B.Sc / B.Com</option>
+                </select>
+            </div>
+
+        </div>
+
+        <!-- Filter 3: Skills Multi-Select Picker -->
+        <div style="border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
+                <div>
+                    <label style="font-size: 0.88rem; font-weight: 600; color: #ffffff; margin-bottom: 0.2rem; display: block;">
+                        💡 Skills Multi-Select <span style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 400;">(Select skills you have or are interested in):</span>
+                    </label>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span id="selected-skills-count" style="font-size: 0.8rem; color: #34d399; font-weight: 600;">
+                        0 skills selected
+                    </span>
+                    <button type="button" onclick="clearSelectedSkills()" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary); font-size: 0.76rem; padding: 0.2rem 0.55rem; border-radius: 4px; cursor: pointer;">
+                        Clear All
+                    </button>
+                </div>
+            </div>
+
+            <!-- Skills Chip Container -->
+            <div id="skills-chip-container" style="display: flex; flex-wrap: wrap; gap: 0.45rem; max-height: 140px; overflow-y: auto; padding: 0.35rem 0;">
+                <!-- Populated dynamically via JS -->
+                <span style="color: var(--text-secondary); font-size: 0.85rem;">Loading sector skills...</span>
+            </div>
+        </div>
+
+        <!-- Find Suitable Jobs Action Button -->
+        <div style="margin-top: 1.5rem; text-align: center; border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
+            <button id="btn-find-jobs" type="button" onclick="executeJobMatching()" class="nav-btn" style="padding: 0.8rem 2.2rem; font-size: 1rem; font-weight: 600; border: none; cursor: pointer; border-radius: 8px; background: linear-gradient(135deg, var(--accent-blue), #2563eb); color: #ffffff; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.25); transition: all 0.25s ease;">
+                🔎 Find Suitable Jobs
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Opportunity List Container -->
+    <div id="opportunities-results-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.15rem; flex-wrap: wrap; gap: 0.5rem;">
+            <h3 id="results-heading" style="font-size: 1.2rem; color: #ffffff; margin: 0;">
+                Recommended Opportunities
+            </h3>
+            <span id="results-count" style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">
+                Ready to search
+            </span>
+        </div>
+
+        <div id="opportunities-list" style="display: flex; flex-direction: column; gap: 1.25rem;">
+            <!-- Rendered by JS -->
+        </div>
+    </div>
+
+</div>
+
+<!-- Job Details Modal Dialog -->
+<div id="job-details-modal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); z-index: 9999; align-items: center; justify-content: center; padding: 1.25rem;">
+    <div class="card" style="max-width: 650px; width: 100%; max-height: 85vh; overflow-y: auto; background: #0f172a; border: 1px solid var(--border-color); border-radius: 14px; padding: 2rem; position: relative;">
+        
+        <button type="button" onclick="closeDetailsModal()" style="position: absolute; top: 1rem; right: 1rem; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: #ffffff; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem;">
+            ✕
+        </button>
+
+        <div id="modal-content">
+            <!-- Populated dynamically via JS -->
+        </div>
+    </div>
+</div>
+
+<style>
+.choice-card {
+    cursor: pointer;
+    border: 2px solid var(--border-color);
+    border-radius: 14px;
+    padding: 2.2rem 1.75rem;
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: rgba(30, 41, 59, 0.7);
+}
+.choice-card:hover {
+    border-color: var(--accent-blue);
+    transform: translateY(-4px);
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.15);
+}
+.choice-action-btn {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+.category-card {
+    cursor: pointer;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.25rem 1.4rem;
+    transition: all 0.2s ease;
+    background: rgba(15, 23, 42, 0.8);
+}
+.category-card:hover {
+    border-color: var(--accent-blue);
+    transform: translateY(-2px);
+}
+.active-cat {
+    border-color: var(--accent-blue) !important;
+    background: rgba(30, 41, 59, 0.95) !important;
+    box-shadow: 0 0 18px rgba(56, 189, 248, 0.18) !important;
+}
+.styled-select:focus {
+    outline: none;
+    border-color: var(--accent-blue) !important;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+}
+.skill-chip {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+.skill-chip:hover {
+    border-color: var(--accent-blue);
+    color: #ffffff;
+}
+.skill-chip.active-skill {
+    background: rgba(56, 189, 248, 0.18) !important;
+    border-color: var(--accent-blue) !important;
+    color: #38bdf8 !important;
+    font-weight: 600;
+}
+.opportunity-card {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem 1.65rem;
+    background: rgba(30, 41, 59, 0.65);
+    transition: all 0.25s ease;
+}
+.opportunity-card:hover {
+    border-color: rgba(56, 189, 248, 0.45);
+    background: rgba(30, 41, 59, 0.9);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+.badge-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-weight: 500;
+}
+</style>
+
+<script>
+// State Management
+let currentCategory = 'govt_job';
+let currentSector = 'all';
+let currentEducation = 'Class 10';
+let selectedSkills = new Set();
+let allCategorySkills = [];
+let currentMatchingResults = [];
+
+function chooseEducation() {
+    window.location.href = '/career-direction';
+}
+
+function chooseWorking() {
+    document.getElementById('entry-choice-container').style.display = 'none';
+    document.getElementById('job-flow-section').style.display = 'block';
+    loadSectorsAndSkills();
+}
+
+function showChoiceScreen() {
+    document.getElementById('job-flow-section').style.display = 'none';
+    document.getElementById('entry-choice-container').style.display = 'grid';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function switchCategory(cat) {
+    if (currentCategory === cat) return;
+    currentCategory = cat;
+    document.getElementById('cat-govt').classList.toggle('active-cat', cat === 'govt_job');
+    document.getElementById('cat-private').classList.toggle('active-cat', cat === 'private_job');
+    currentSector = 'all';
+    selectedSkills.clear();
+    loadSectorsAndSkills();
+}
+
+async function loadSectorsAndSkills() {
+    const sectorDropdown = document.getElementById('sector-dropdown');
+    const sectorCountLabel = document.getElementById('sector-count-label');
+    
+    sectorCountLabel.innerText = 'Loading available sectors...';
+    sectorDropdown.innerHTML = '<option value="all">Loading sectors...</option>';
+
+    try {
+        // 1. Fetch Dynamic Sectors
+        const secRes = await fetch(`/api/opportunities/sectors?category=${encodeURIComponent(currentCategory)}`);
+        const secData = await secRes.json();
+
+        if (secData.sectors && secData.sectors.length > 0) {
+            sectorCountLabel.innerText = `Available Sectors (${secData.total_sectors})`;
+            
+            let optionsHtml = `<option value="all">All Sectors (${secData.total_jobs} jobs available)</option>`;
+            secData.sectors.forEach(s => {
+                optionsHtml += `<option value="${s.name}">${s.name} — ${s.job_count} ${s.job_count === 1 ? 'job' : 'jobs'} available</option>`;
+            });
+            sectorDropdown.innerHTML = optionsHtml;
+            sectorDropdown.value = currentSector;
+        }
+
+        // 2. Fetch Available Skills for current category & sector
+        await loadAvailableSkills();
+
+        // 3. Execute initial matching
+        executeJobMatching();
+
+    } catch (err) {
+        console.error('Error loading sectors/skills:', err);
+    }
+}
+
+async function loadAvailableSkills() {
+    const chipContainer = document.getElementById('skills-chip-container');
+    const secParam = currentSector && currentSector !== 'all' ? `&sector=${encodeURIComponent(currentSector)}` : '';
+    
+    try {
+        const skRes = await fetch(`/api/opportunities/skills?category=${encodeURIComponent(currentCategory)}${secParam}`);
+        const skData = await skRes.json();
+
+        allCategorySkills = skData.skills || [];
+        
+        if (allCategorySkills.length === 0) {
+            chipContainer.innerHTML = '<span style="color: var(--text-secondary); font-size: 0.85rem;">No specific skills listed for this sector.</span>';
+            return;
+        }
+
+        chipContainer.innerHTML = allCategorySkills.map(sk => {
+            const isChecked = selectedSkills.has(sk);
+            return `
+                <button type="button" class="skill-chip ${isChecked ? 'active-skill' : ''}" onclick="toggleSkill('${sk.replace(/'/g, "\\'")}', this)">
+                    <span>${isChecked ? '✓' : '+'}</span>
+                    <span>${sk}</span>
+                </button>
+            `;
+        }).join('');
+
+        updateSelectedSkillsCount();
+
+    } catch (err) {
+        chipContainer.innerHTML = '<span style="color: #fb7185; font-size: 0.85rem;">Could not load skills list.</span>';
+    }
+}
+
+function toggleSkill(skill, chipEl) {
+    if (selectedSkills.has(skill)) {
+        selectedSkills.delete(skill);
+        chipEl.classList.remove('active-skill');
+        chipEl.querySelector('span:first-child').innerText = '+';
+    } else {
+        selectedSkills.add(skill);
+        chipEl.classList.add('active-skill');
+        chipEl.querySelector('span:first-child').innerText = '✓';
+    }
+    updateSelectedSkillsCount();
+}
+
+function clearSelectedSkills() {
+    selectedSkills.clear();
+    document.querySelectorAll('.skill-chip').forEach(chip => {
+        chip.classList.remove('active-skill');
+        const span = chip.querySelector('span:first-child');
+        if (span) span.innerText = '+';
+    });
+    updateSelectedSkillsCount();
+    executeJobMatching();
+}
+
+function updateSelectedSkillsCount() {
+    const countEl = document.getElementById('selected-skills-count');
+    const size = selectedSkills.size;
+    countEl.innerText = `${size} ${size === 1 ? 'skill' : 'skills'} selected`;
+}
+
+function onSectorChanged() {
+    const dropdown = document.getElementById('sector-dropdown');
+    currentSector = dropdown.value;
+    loadAvailableSkills();
+}
+
+function onFilterChanged() {
+    const eduDropdown = document.getElementById('education-dropdown');
+    currentEducation = eduDropdown.value;
+}
+
+async function executeJobMatching() {
+    const listEl = document.getElementById('opportunities-list');
+    const headingEl = document.getElementById('results-heading');
+    const countEl = document.getElementById('results-count');
+    const eduDropdown = document.getElementById('education-dropdown');
+    
+    currentEducation = eduDropdown.value;
+    currentSector = document.getElementById('sector-dropdown').value;
+
+    headingEl.innerText = currentCategory === 'govt_job' ? '🏛️ Recommended Government Opportunities' : '🏢 Recommended Private Job Opportunities';
+    countEl.innerText = 'Searching matching opportunities...';
+    listEl.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.9rem; padding: 1.5rem; text-align: center;">Matching your profile with verified opportunities...</div>';
+
+    try {
+        const payload = {
+            category: currentCategory,
+            sector: currentSector === 'all' ? null : currentSector,
+            education_level: currentEducation,
+            skills: Array.from(selectedSkills)
+        };
+
+        const res = await fetch('/api/opportunities/match', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        currentMatchingResults = data.matches || [];
+
+        if (currentMatchingResults.length > 0) {
+            countEl.innerText = `${currentMatchingResults.length} ${currentMatchingResults.length === 1 ? 'job matches' : 'jobs match'} your profile`;
+            listEl.innerHTML = currentMatchingResults.map((opp, idx) => renderMatchingJobCard(opp, idx)).join('');
+        } else {
+            countEl.innerText = '0 matching jobs';
+            renderEmptyState();
+        }
+
+    } catch (err) {
+        listEl.innerHTML = `
+            <div style="color: #fb7185; text-align: center; padding: 1.5rem;">
+                Could not load matching opportunities. Please try again.
+            </div>
+        `;
+    }
+}
+
+function renderMatchingJobCard(opp, idx) {
+    const isGovt = currentCategory === 'govt_job' || opp.category === 'govt_job';
+    
+    // Tag 1: Qualification Match
+    let qualTag = '';
+    if (opp.qualification_match) {
+        qualTag = `
+            <span class="badge-tag" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3);">
+                🎓 Qualification ✓ (Min. ${opp.qualification})
+            </span>
+        `;
+    } else {
+        qualTag = `
+            <span class="badge-tag" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3);">
+                🎓 Min. Qualification: ${opp.qualification}
+            </span>
+        `;
+    }
+
+    // Tag 2: Sector
+    const sectorTag = `
+        <span class="badge-tag" style="background: rgba(56, 189, 248, 0.12); color: var(--accent-blue); border: 1px solid rgba(56, 189, 248, 0.25);">
+            🏢 Sector: ${opp.sector}
+        </span>
+    `;
+
+    // Tag 3: Exam (for Govt)
+    let examTag = '';
+    if (isGovt && opp.exam_selection) {
+        examTag = `
+            <span class="badge-tag" style="background: rgba(245, 158, 11, 0.12); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.25);">
+                📝 Exam: ${opp.exam_selection}
+            </span>
+        `;
+    }
+
+    // Skills breakdown: Matched skills
+    let matchedSkillsHtml = '';
+    if (opp.matched_skills && opp.matched_skills.length > 0) {
+        matchedSkillsHtml = `
+            <div style="margin-top: 0.5rem; display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem;">
+                <span style="font-size: 0.8rem; color: #34d399; font-weight: 600;">✓ Matched Skills:</span>
+                ${opp.matched_skills.map(s => `<span class="badge-tag" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 0.74rem;">${s}</span>`).join('')}
+            </div>
+        `;
+    }
+
+    // Skills to Build
+    let missingSkillsHtml = '';
+    if (opp.missing_skills && opp.missing_skills.length > 0) {
+        missingSkillsHtml = `
+            <div style="margin-top: 0.4rem; display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem;">
+                <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 500;">• Skills to Build:</span>
+                ${opp.missing_skills.map(s => `<span class="badge-tag" style="background: rgba(51, 65, 85, 0.4); color: #cbd5e1; border: 1px solid var(--border-color); font-size: 0.74rem;">${s}</span>`).join('')}
+            </div>
+        `;
+    }
+
+    // Why this matches you explanation points
+    let whyMatchedHtml = '';
+    if (opp.why_matched && opp.why_matched.length > 0) {
+        whyMatchedHtml = `
+            <div style="margin: 0.75rem 0 0.6rem 0; padding: 0.5rem 0.85rem; background: rgba(15, 23, 42, 0.6); border-radius: 8px; border-left: 3px solid #38bdf8;">
+                <span style="font-size: 0.78rem; font-weight: 600; color: #38bdf8; display: block; margin-bottom: 0.25rem;">Why this matches you:</span>
+                <ul style="margin: 0; padding-left: 1.1rem; color: var(--text-secondary); font-size: 0.82rem; line-height: 1.4;">
+                    ${opp.why_matched.map(w => `<li>${w}</li>`).join('')}
+                </ul>
+            </div>
+        `;
+    }
+
+    return `
+        <div class="opportunity-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+                <div>
+                    <h4 style="font-size: 1.18rem; color: #ffffff; margin: 0 0 0.25rem 0;">
+                        ${opp.title}
+                    </h4>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="badge-tag" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); font-weight: 700; font-size: 0.82rem;">
+                        🔥 ${opp.match_score}% Match
+                    </span>
+                    <span style="font-size: 0.74rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(51, 65, 85, 0.6); color: var(--text-secondary); border: 1px solid var(--border-color);">
+                        ${opp.verification_status || 'Verified'}
+                    </span>
+                </div>
+            </div>
+            
+            <div style="display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 0.65rem;">
+                ${qualTag}
+                ${sectorTag}
+                ${examTag}
+            </div>
+
+            <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.45; margin: 0 0 0.5rem 0;">
+                ${opp.description || 'Verified employment or recruitment pathway opportunity.'}
+            </p>
+
+            ${whyMatchedHtml}
+            ${matchedSkillsHtml}
+            ${missingSkillsHtml}
+
+            <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                <span style="font-size: 0.78rem; color: #94a3b8;">
+                    Source: <strong style="color: #cbd5e1;">${opp.source || 'Official Notification'}</strong>
+                </span>
+                <button type="button" onclick="openDetailsModal(${idx})" class="nav-btn" style="padding: 0.4rem 0.9rem; font-size: 0.82rem; border-radius: 6px; background: rgba(56, 189, 248, 0.12); color: var(--accent-blue); border: 1px solid rgba(56, 189, 248, 0.3); cursor: pointer; transition: all 0.2s ease;">
+                    👁️ View Details
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function renderEmptyState() {
+    const listEl = document.getElementById('opportunities-list');
+    listEl.innerHTML = `
+        <div class="card" style="text-align: center; padding: 2.5rem 1.5rem; border: 1px dashed var(--border-color); background: rgba(15, 23, 42, 0.5);">
+            <span style="font-size: 2.2rem; display: block; margin-bottom: 0.6rem;">ℹ️</span>
+            <h4 style="color: #ffffff; font-size: 1.1rem; margin-bottom: 0.4rem;">
+                No matching jobs found
+            </h4>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; max-width: 540px; margin: 0 auto 1.5rem auto; line-height: 1.5;">
+                We couldn't find a job that matches all of your selected filters. Try selecting another sector, choosing another education level, or selecting additional skills.
+            </p>
+            <div style="display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
+                <button type="button" onclick="resetSectorFilter()" class="nav-btn" style="padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: 6px; background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); border: 1px solid rgba(56, 189, 248, 0.3); cursor: pointer;">
+                    🔄 Change Sector
+                </button>
+                <button type="button" onclick="clearSelectedSkills()" class="nav-btn" style="padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: 6px; background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); cursor: pointer;">
+                    💡 Change Skills
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function resetSectorFilter() {
+    document.getElementById('sector-dropdown').value = 'all';
+    currentSector = 'all';
+    loadAvailableSkills();
+    executeJobMatching();
+}
+
+function openDetailsModal(idx) {
+    const opp = currentMatchingResults[idx];
+    if (!opp) return;
+
+    const modal = document.getElementById('job-details-modal');
+    const content = document.getElementById('modal-content');
+
+    const isGovt = currentCategory === 'govt_job' || opp.category === 'govt_job';
+
+    content.innerHTML = `
+        <div style="margin-bottom: 1.25rem;">
+            <div style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; padding: 0.2rem 0.6rem; border-radius: 6px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; margin-bottom: 0.5rem;">
+                ${isGovt ? '🏛️ Government Opportunity' : '🏢 Private Job Opportunity'}
+            </div>
+            <h3 style="font-size: 1.45rem; color: #ffffff; margin: 0 0 0.5rem 0;">
+                ${opp.title}
+            </h3>
+            <span style="color: var(--text-secondary); font-size: 0.88rem;">
+                Sector: <strong style="color: #ffffff;">${opp.sector}</strong>
+            </span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+            <div style="background: rgba(30, 41, 59, 0.6); padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                <span style="font-size: 0.78rem; color: var(--text-secondary); display: block; margin-bottom: 0.2rem;">Minimum Qualification</span>
+                <strong style="color: #38bdf8; font-size: 0.95rem;">${opp.qualification}</strong>
+            </div>
+            <div style="background: rgba(30, 41, 59, 0.6); padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                <span style="font-size: 0.78rem; color: var(--text-secondary); display: block; margin-bottom: 0.2rem;">Relevance Match</span>
+                <strong style="color: #34d399; font-size: 0.95rem;">${opp.match_score}% Match</strong>
+            </div>
+        </div>
+
+        ${isGovt && opp.exam_selection ? `
+            <div style="margin-bottom: 1.25rem; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 8px; padding: 1rem;">
+                <span style="font-size: 0.82rem; font-weight: 600; color: #fbbf24; display: block; margin-bottom: 0.3rem;">Selection / Examination Process</span>
+                <p style="color: #fde68a; font-size: 0.88rem; margin: 0; line-height: 1.45;">
+                    ${opp.exam_selection}
+                </p>
+            </div>
+        ` : ''}
+
+        <div style="margin-bottom: 1.25rem;">
+            <h5 style="color: #ffffff; font-size: 0.95rem; margin: 0 0 0.4rem 0;">Role Overview & Scope:</h5>
+            <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5; margin: 0;">
+                ${opp.description || 'Verified job description and role details.'}
+            </p>
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+            <h5 style="color: #ffffff; font-size: 0.95rem; margin: 0 0 0.4rem 0;">Required Skill Matrix:</h5>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+                ${(opp.required_skills || []).map(sk => `
+                    <span class="badge-tag" style="background: rgba(51, 65, 85, 0.6); color: #ffffff; border: 1px solid var(--border-color);">
+                        ${sk}
+                    </span>
+                `).join('')}
+            </div>
+        </div>
+
+        <div style="border-top: 1px solid var(--border-color); padding-top: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <span style="font-size: 0.8rem; color: var(--text-secondary);">
+                Verification Authority: <strong style="color: #cbd5e1;">${opp.source || 'Authorized Source'}</strong>
+            </span>
+            <button type="button" onclick="closeDetailsModal()" class="nav-btn" style="padding: 0.45rem 1.2rem; font-size: 0.85rem; border-radius: 6px; background: var(--border-color); color: #ffffff; border: none; cursor: pointer;">
+                Close
+            </button>
+        </div>
+    `;
+
+    modal.style.display = 'flex';
+}
+
+function closeDetailsModal() {
+    document.getElementById('job-details-modal').style.display = 'none';
+}
+
+// Auto-detect student profile qualification and skills on page load
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const res = await fetch('/api/opportunities/qualification', {
+            headers: { 'Accept': 'application/json' }
+        });
+        const data = await res.json();
+        
+        if (data.is_detected) {
+            if (data.qualification) {
+                const detected = data.qualification;
+                const badge = document.getElementById('detected-qual-badge');
+                badge.innerText = `Detected: ${detected}`;
+                badge.style.display = 'inline-block';
+
+                const eduDropdown = document.getElementById('education-dropdown');
+                const norm = detected.toLowerCase();
+                if (norm.includes('undergraduate') || norm.includes('degree') || norm.includes('btech') || norm.includes('bachelor') || norm.includes('graduate')) {
+                    eduDropdown.value = 'Undergraduate';
+                } else if (norm.includes('diploma') || norm.includes('polytechnic') || norm.includes('iti')) {
+                    eduDropdown.value = 'Diploma';
+                } else if (norm.includes('12') || norm.includes('inter') || norm.includes('higher secondary')) {
+                    eduDropdown.value = 'Class 12';
+                } else {
+                    eduDropdown.value = 'Class 10';
+                }
+                currentEducation = eduDropdown.value;
+            }
+
+            if (data.skills && Array.isArray(data.skills)) {
+                data.skills.forEach(s => selectedSkills.add(s));
+            }
+        }
+    } catch (e) {
+        console.error('Error auto-detecting profile:', e);
+    }
+});
+</script>
+{% endblock %}
+

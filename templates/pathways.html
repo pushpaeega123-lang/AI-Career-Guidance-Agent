@@ -1,0 +1,428 @@
+{% extends "base.html" %}
+
+{% block title %}Career Pathways Discovery — AI Career Navigator{% endblock %}
+
+{% block content %}
+<!-- Stepper Header -->
+<div style="max-width: 1080px; margin: 0 auto 2rem auto;">
+    <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.85rem 1.5rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: #10b981; color: white; font-size: 0.8rem; font-weight: 700;">✓</span>
+            <a href="/career-direction" style="color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 500;">Step 1: Career Direction</a>
+        </div>
+        <span style="color: var(--border-color); font-weight: bold;">&rarr;</span>
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: var(--accent-blue); color: #0f172a; font-size: 0.8rem; font-weight: 700;">2</span>
+            <span style="color: var(--text-primary); font-size: 0.85rem; font-weight: 600;">Step 2: Discover Careers</span>
+        </div>
+        <span style="color: var(--border-color); font-weight: bold;">&rarr;</span>
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: rgba(51, 65, 85, 0.8); color: var(--text-secondary); font-size: 0.8rem; font-weight: 700;">3</span>
+            <span style="color: var(--text-secondary); font-size: 0.85rem;">Step 3: Your Career Path</span>
+        </div>
+        <span style="color: var(--border-color); font-weight: bold;">&rarr;</span>
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: rgba(51, 65, 85, 0.8); color: var(--text-secondary); font-size: 0.8rem; font-weight: 700;">4</span>
+            <span style="color: var(--text-secondary); font-size: 0.85rem;">Step 4: My Next Steps</span>
+        </div>
+        <span style="color: var(--border-color); font-weight: bold;">&rarr;</span>
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: rgba(51, 65, 85, 0.8); color: var(--text-secondary); font-size: 0.8rem; font-weight: 700;">5</span>
+            <span style="color: var(--text-secondary); font-size: 0.85rem;">Step 5: Career Roadmap</span>
+        </div>
+    </div>
+</div>
+
+<!-- Context / Evidence Banner -->
+<div id="context-banner" style="max-width: 1080px; margin: 0 auto 2rem auto; background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-color); border-radius: 10px; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div>
+        <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--accent-blue); letter-spacing: 0.05em;">Active Exploration Context</span>
+        <div id="context-summary-text" style="font-size: 0.95rem; color: #ffffff; font-weight: 500; margin-top: 0.2rem;">
+            Loading profile and pathway evidence...
+        </div>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+        <a href="/career-direction" class="role-chip" style="text-decoration: none; padding: 0.35rem 0.8rem;">Change Direction</a>
+        <a href="/career-discovery" class="role-chip" style="text-decoration: none; padding: 0.35rem 0.8rem;">Edit Profile</a>
+    </div>
+</div>
+
+<!-- Header Section -->
+<section class="hero-section" style="margin-bottom: 2.5rem; text-align: center;">
+    <div class="hero-badge" id="hero-badge-text">🧭 Career Discovery</div>
+    <h1 class="hero-title" id="page-title" style="font-size: 2.3rem;">Careers you could explore <span style="display:none;">Career Pathways To Explore</span></h1>
+    <p class="hero-subtitle" id="page-subtitle" style="max-width: 680px; margin: 0 auto;">
+        Based on what you told us, here are career options that fit your interests and background. Choose one to see your step-by-step path.
+    </p>
+</section>
+
+<!-- Active Selection Status Card (Fixed/Persistent when selected) -->
+<div id="selection-card" class="card highlight-card" style="display: none; max-width: 1080px; margin: 0 auto 2.5rem auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 0.75rem;">
+        <div>
+            <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #34d399; letter-spacing: 0.05em;">Active Selection</span>
+            <h2 id="selected-pathway-title" style="margin-top: 0.2rem; margin-bottom: 0.2rem; font-size: 1.35rem; color: #ffffff;">-</h2>
+            <p id="selected-pathway-desc" style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0;">
+                Pathway selected. You can now proceed to evaluate eligibility requirements and analyze your skill readiness.
+            </p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <span class="prio-badge badge-comp" style="font-size: 0.85rem; padding: 0.35rem 0.75rem;">✓ Selected for Evaluation</span>
+            <button type="button" class="role-chip" onclick="clearSelection()" style="background: rgba(244, 63, 94, 0.15); border-color: rgba(244, 63, 94, 0.4); color: #fb7185;">Deselect</button>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; border-top: 1px solid var(--border-color); padding-top: 1rem; margin-top: 1rem;">
+        <a id="btn-goto-eligibility" href="/pathway-analysis" class="nav-btn" style="text-decoration: none; padding: 0.6rem 1.4rem; font-size: 0.92rem; font-weight: 600;">
+            Step 4: Analyze Pathway Fit (Eligibility & Skill Gap) &rarr;
+        </a>
+        <a href="/api/agents/demo" class="nav-btn" style="text-decoration: none; padding: 0.6rem 1.2rem; font-size: 0.88rem; background: rgba(30, 41, 59, 0.9); border: 1px solid var(--border-color); color: var(--text-secondary) !important;">
+            🤖 Consult Agent Orchestrator
+        </a>
+    </div>
+</div>
+
+<!-- Pathways Grid Container -->
+<div id="pathways-container" class="grid-container" style="max-width: 1080px; margin: 0 auto 4rem auto; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 1.5rem;">
+    <!-- Rendered dynamically via JavaScript -->
+</div>
+
+<!-- Source Attribution & Disclosure Notice -->
+<div style="max-width: 1080px; margin: 0 auto 4rem auto; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem;">
+    <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem;">
+        <span style="font-size: 1.1rem;">🏛️</span>
+        <h4 style="font-size: 0.95rem; margin-bottom: 0; color: #ffffff;">Source Attribution & Neutrality Notice</h4>
+    </div>
+    <p style="font-size: 0.84rem; color: var(--text-secondary); margin-bottom: 0; line-height: 1.6;">
+        All pathway criteria and education routes are grounded in publicly recognized career standards (such as the National Career Service, AICTE, NMC, and UGC frameworks). 
+        The suggestions above represent relevant exploration directions based on evidence provided in your profile, not guaranteed outcomes or exclusive recommendations.
+    </p>
+</div>
+
+<style>
+.pathway-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.25s ease;
+}
+.pathway-card:hover {
+    border-color: var(--accent-blue);
+    transform: translateY(-3px);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
+}
+.pathway-card-selected {
+    border-color: #34d399 !important;
+    background: rgba(30, 41, 59, 0.98);
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.2) !important;
+}
+.relevance-box {
+    background: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    margin: 1rem 0;
+}
+.evidence-chips-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.6rem;
+}
+.evidence-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.74rem;
+    font-weight: 500;
+}
+.chip-int {
+    background: rgba(168, 85, 247, 0.18);
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    color: #e9d5ff;
+}
+.chip-sk {
+    background: rgba(56, 189, 248, 0.18);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    color: #bae6fd;
+}
+.chip-sub {
+    background: rgba(20, 184, 166, 0.18);
+    border: 1px solid rgba(20, 184, 166, 0.4);
+    color: #99f6e4;
+}
+.chip-work {
+    background: rgba(245, 158, 11, 0.18);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    color: #fde68a;
+}
+.meta-row {
+    font-size: 0.85rem;
+    margin-bottom: 0.6rem;
+    line-height: 1.45;
+}
+.meta-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 0.2rem;
+    letter-spacing: 0.04em;
+}
+.role-chip {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.role-chip:hover {
+    color: #ffffff;
+    border-color: var(--accent-blue);
+    background: rgba(56, 189, 248, 0.15);
+}
+.star-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    border-radius: 6px;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.star-btn:hover, .star-btn-active {
+    color: #facc15;
+    border-color: #facc15;
+    background: rgba(250, 204, 21, 0.1);
+}
+.prio-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+}
+.badge-comp { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+</style>
+
+<script>
+let currentPathways = [];
+let selectedPathway = null;
+let shortlistedIds = new Set();
+
+async function loadPathways() {
+    try {
+        const res = await fetch('/api/career/pathways', {
+            headers: { 'Accept': 'application/json' }
+        });
+        const data = await res.json();
+        
+        currentPathways = data.pathways || [];
+        updateContextBanner(data);
+        renderPathways(currentPathways);
+
+        // Fetch selected pathway state
+        checkSelectedPathway();
+    } catch (err) {
+        document.getElementById('pathways-container').innerHTML = 
+            `<div class="card" style="grid-column: 1/-1; text-align: center; color: #fb7185;">Failed to load pathways: ${err.message}</div>`;
+    }
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.innerText = text;
+    return div.innerHTML;
+}
+
+function updateContextBanner(data) {
+    const banner = document.getElementById('context-summary-text');
+    const badge = document.getElementById('hero-badge-text');
+    const title = document.getElementById('page-title');
+    const subtitle = document.getElementById('page-subtitle');
+
+    if (data.career_direction === 'known' && data.target_role) {
+        banner.innerHTML = `🎯 Declared Target Goal: <strong style="color: var(--accent-blue);">${escapeHtml(data.target_role)}</strong>`;
+        badge.innerText = '🎯 Target Pathway Evaluation';
+        title.innerText = `Pathway Guide: ${data.target_role}`;
+        subtitle.innerText = `Verified education routes, prerequisite framework, and progression steps for your requested career target: ${data.target_role}.`;
+    } else {
+        let profileSummary = 'Matching student skills, subjects, and interests';
+        if (data.student_profile && (data.student_profile.education_level || (data.student_profile.skills && data.student_profile.skills.length))) {
+            const edu = data.student_profile.education_level || '';
+            const skills = (data.student_profile.skills || []).slice(0, 3).join(', ');
+            const interests = (data.student_profile.interests || []).slice(0, 2).join(', ');
+            const parts = [];
+            if (edu) parts.push(`Education: ${edu}`);
+            if (skills) parts.push(`Skills: ${skills}`);
+            if (interests) parts.push(`Interests: ${interests}`);
+            if (parts.length) profileSummary = parts.join(' • ');
+        }
+        banner.innerHTML = `🧭 Exploration Mode: <span style="color: #c084fc;">${escapeHtml(profileSummary)}</span>`;
+        badge.innerText = '🧭 Exploration Mode';
+        title.innerText = 'Relevant Pathways For You';
+        subtitle.innerText = 'Review relevant career pathways assembled from your stated background, interests, and preferences. Inspect details, shortlist options, and select a pathway to evaluate.';
+    }
+}
+
+function getShortSentence(p) {
+    if (p.name === 'Medicine & Healthcare' || p.name === 'Doctor' || (p.name && p.name.includes('Medicine'))) {
+        return 'Medical degree pathway for becoming a doctor.';
+    }
+    if (p.name === 'Software Engineering' || (p.name && p.name.includes('Software'))) {
+        return 'Engineering degree pathway for software and technology careers.';
+    }
+    if (p.name === 'Data Science & Analytics' || (p.name && p.name.includes('Data Science'))) {
+        return 'Applied mathematics and computing pathway for data science and AI.';
+    }
+    if (p.name === 'Cloud Architecture & DevOps' || (p.name && p.name.includes('Cloud'))) {
+        return 'Infrastructure and cloud systems pathway for engineering reliable online platforms.';
+    }
+    if (p.name === 'Law & Legal Practice' || (p.name && p.name.includes('Law'))) {
+        return 'Legal studies degree pathway for becoming an advocate or legal advisor.';
+    }
+    if (p.name === 'Financial Analysis & Investment' || (p.name && p.name.includes('Finance')) || (p.name && p.name.includes('Commerce'))) {
+        return 'Commerce and finance degree pathway for accounting, banking, and investment roles.';
+    }
+    if (p.name === 'Public Administration & Civil Services' || (p.name && p.name.includes('Civil Services'))) {
+        return 'Degree pathway for civil services and government administrative careers.';
+    }
+    if (p.name === 'UI/UX & Product Design' || (p.name && p.name.includes('Design'))) {
+        return 'Design degree pathway for crafting digital products and user interfaces.';
+    }
+    if (p.name === 'Education & Academic Teaching' || (p.name && p.name.includes('Education'))) {
+        return 'Higher education degree pathway for teaching and academic instruction.';
+    }
+    if (p.name === 'Entrepreneurship & Innovation' || (p.name && p.name.includes('Entrepreneur'))) {
+        return 'Business and innovation pathway for building and scaling ventures.';
+    }
+    if (p.short_description) {
+        return p.short_description.trim();
+    }
+    if (p.overview) {
+        const firstDot = p.overview.indexOf('.');
+        if (firstDot > 10) {
+            return p.overview.substring(0, firstDot + 1).trim();
+        }
+        return p.overview.trim();
+    }
+    return `Career and education pathway for becoming a professional in ${p.name}.`;
+}
+
+function renderPathways(pathways) {
+    const container = document.getElementById('pathways-container');
+    if (!pathways || pathways.length === 0) {
+        container.innerHTML = `
+            <div class="card" style="grid-column: 1/-1; text-align: center; padding: 3rem 1.5rem;">
+                <span style="font-size: 2.5rem;">🧭</span>
+                <h3 style="margin-top: 0.75rem; margin-bottom: 0.5rem; color: #ffffff; font-size: 1.3rem;">No strong pathway matches found</h3>
+                <p style="color: var(--text-secondary); max-width: 540px; margin: 0 auto 1.5rem auto; line-height: 1.6;">
+                    No strong pathway matches were found from the information provided. Add more interests, skills, or work preferences to improve pathway discovery.
+                </p>
+                <a href="/career-discovery" class="nav-btn" style="text-decoration: none; display: inline-block; padding: 0.7rem 1.4rem;">✍️ Add More Profile Evidence &rarr;</a>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = pathways.map(p => {
+        const isSelected = selectedPathway && (selectedPathway.id === p.id || selectedPathway.name === p.name);
+
+        return `
+            <div id="card-${p.id}" class="pathway-card ${isSelected ? 'pathway-card-selected' : ''}">
+                <div style="margin-bottom: 1.5rem;">
+                    <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 0.6rem; color: #ffffff;">${escapeHtml(p.name)}</h3>
+                    <p style="font-size: 0.92rem; color: var(--text-secondary); line-height: 1.5; margin: 0;">
+                        ${escapeHtml(getShortSentence(p))}
+                    </p>
+                </div>
+
+                <div>
+                    <button type="button" class="nav-btn" style="width: 100%; border: none; cursor: pointer; padding: 0.75rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; background: ${isSelected ? '#10b981' : 'linear-gradient(135deg, var(--accent-blue), var(--accent-indigo))'};" onclick="selectPathway('${p.id}', '${p.name.replace(/'/g, "\\'")}')">
+                        ${isSelected ? '✓ Selected Pathway &rarr;' : 'Select Pathway &rarr;'}
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+async function selectPathway(id, name) {
+    try {
+        const res = await fetch('/api/career/pathways/select', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pathway_id: id, pathway_name: name })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            selectedPathway = data.selected_pathway;
+            // Direct user straight to their Career Path Guidance experience
+            window.location.href = '/pathway-analysis';
+        } else {
+            alert('Error selecting pathway: ' + (data.error || 'Failed'));
+        }
+    } catch (err) {
+        alert('Network error: ' + err.message);
+    }
+}
+
+async function clearSelection() {
+    try {
+        await fetch('/api/career/pathways/selected', { method: 'DELETE' });
+        selectedPathway = null;
+        document.getElementById('selection-card').style.display = 'none';
+        renderPathways(currentPathways);
+    } catch(e) {}
+}
+
+function renderSelectionCard(selection) {
+    const card = document.getElementById('selection-card');
+    card.style.display = 'block';
+    document.getElementById('selected-pathway-title').innerText = '🎯 ' + selection.name;
+    document.getElementById('selected-pathway-desc').innerText = `Pathway '${selection.name}' recorded. You can now verify eligibility prerequisites and map actionable skill milestones.`;
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function toggleShortlist(id, event) {
+    event.stopPropagation();
+    try {
+        const res = await fetch('/api/career/pathways/shortlist', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pathway_id: id })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            shortlistedIds = new Set(data.shortlisted_pathways || []);
+            renderPathways(currentPathways);
+        }
+    } catch(e) {}
+}
+
+async function checkSelectedPathway() {
+    try {
+        const res = await fetch('/api/career/pathways/selected');
+        const data = await res.json();
+        if (data.is_selected && data.selected_pathway) {
+            selectedPathway = data.selected_pathway;
+            renderSelectionCard(selectedPathway);
+            renderPathways(currentPathways);
+        }
+    } catch(e) {}
+}
+
+document.addEventListener('DOMContentLoaded', loadPathways);
+</script>
+{% endblock %}
