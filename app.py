@@ -71,7 +71,20 @@ def create_app(config_name=None):
     def roadmap_view():
         return render_template('roadmap.html')
 
+    # Direct User-Facing Route for Student Profile UI (Member 2)
+    from profile.routes import profile_ui
+    app.add_url_rule('/profile', 'profile_root', profile_ui, methods=['GET'])
+    app.add_url_rule('/profile/<int:profile_id>', 'profile_view', profile_ui, methods=['GET'])
 
+    # Direct User-Facing Route for Career Guidance Dashboard (Member 2)
+    from career.routes import career_guidance_dashboard
+    app.add_url_rule('/career/guidance', 'career_guidance_root', career_guidance_dashboard, methods=['GET'])
+    app.add_url_rule('/career/guidance/<int:profile_id>', 'career_guidance_view', career_guidance_dashboard, methods=['GET'])
+
+    # Direct User-Facing Route for Education Pathways Dashboard (Member 2)
+    from education.routes import education_pathways_dashboard
+    app.add_url_rule('/education/pathways', 'education_pathways_root', education_pathways_dashboard, methods=['GET'])
+    app.add_url_rule('/education/pathways/<int:profile_id>', 'education_pathways_view', education_pathways_dashboard, methods=['GET'])
 
     # Create database schema within app context
     with app.app_context():
