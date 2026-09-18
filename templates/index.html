@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="hero-badge">🤖 Multi-Agent AI Platform</div>
+    <h1 class="hero-title">AI-Agentic Career Guidance & Opportunity Navigator</h1>
+    <p class="hero-subtitle">
+        Empowering students with personalized career intelligence, pathway recommendations, 
+        opportunity tracking, and automated agent orchestrations.
+    </p>
+</section>
+
+<section id="modules" class="modules-grid">
+    <h2 class="section-title">Modular System Architecture</h2>
+    <div class="grid-container">
+        <div class="card">
+            <span class="card-tag tag-dev1">Dev 1</span>
+            <h3>1. Student Intelligence</h3>
+            <p>Profile building, interest extraction & academic background analysis.</p>
+            <a href="/api/profile/health" class="card-link">Endpoint Status &rarr;</a>
+        </div>
+        <div class="card">
+            <span class="card-tag tag-dev2">Dev 2</span>
+            <h3>2. Career Pathways</h3>
+            <p>Interactive career & degree maps with future-oriented progression pathways.</p>
+            <a href="/api/career/health" class="card-link">Endpoint Status &rarr;</a>
+        </div>
+        <div class="card">
+            <span class="card-tag tag-dev2">Dev 2</span>
+            <h3>3. Education Pathways</h3>
+            <p>Courses, certifications, and higher-education recommendations.</p>
+            <a href="/api/education/health" class="card-link">Endpoint Status &rarr;</a>
+        </div>
+        <div class="card">
+            <span class="card-tag tag-dev3">Dev 3</span>
+            <h3>4. Opportunity Aggregator</h3>
+            <p>Jobs, Government Jobs, Exams, Internships, Apprenticeships & Scholarships.</p>
+            <a href="/api/opportunities/health" class="card-link">Endpoint Status &rarr;</a>
+        </div>
+        <div class="card">
+            <span class="card-tag tag-dev2">Dev 2</span>
+            <h3>5. Eligibility Engine</h3>
+            <p>Automated criteria and prerequisite verification logic.</p>
+            <a href="/api/eligibility/health" class="card-link">Endpoint Status &rarr;</a>
+        </div>
+        <div class="card">
+            <span class="card-tag tag-dev3">Dev 3</span>
+            <h3>6. Skill Gap Analysis</h3>
+            <p>Dynamic assessment comparing current vs target skill requirements.</p>
+            <a href="/api/skill-gap/health" class="card-link">Endpoint Status &rarr;</a>
+        </div>
+        <div class="card">
+            <span class="card-tag tag-dev4">Dev 4</span>
+            <h3>7. Career Action Planner</h3>
+            <p>Milestone tracking and step-by-step personalized action roadmaps.</p>
+            <a href="/api/planner/health" class="card-link">Endpoint Status &rarr;</a>
+        </div>
+        <div class="card">
+            <span class="card-tag tag-dev4">Dev 4</span>
+            <h3>8. Notifications</h3>
+            <p>Personalized alerts for deadlines, exams, and new opportunity matches.</p>
+            <a href="/api/notifications/health" class="card-link">Endpoint Status &rarr;</a>
+        </div>
+        <div class="card highlight-card">
+            <span class="card-tag tag-dev4">Dev 4</span>
+            <h3>9. Agent Orchestrator</h3>
+            <p>Multi-agent workflow routing & automated reasoning engine.</p>
+            <a href="/api/agents/health" class="card-link">Endpoint Status &rarr;</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
