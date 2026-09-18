@@ -1,0 +1,1474 @@
+{% extends "base.html" %}
+
+{% block title %}Student Profile & Interest Intelligence - AI Career Navigator{% endblock %}
+
+{% block content %}
+{# Safely extract profile variables for robust rendering whether active_profile is present or None #}
+{% set deg = active_profile.get_degree_details() if active_profile else {} %}
+{% set dip = active_profile.get_diploma_details() if active_profile else {} %}
+{% set pg = active_profile.get_pg_details() if active_profile else {} %}
+{% set prefs = active_profile.get_preferences() if active_profile else {} %}
+{% set skills_list = active_profile.get_skills() if active_profile else [] %}
+{% set interests_list = active_profile.get_interests() if active_profile else [] %}
+{% set locations_list = active_profile.get_preferred_locations() if active_profile else [] %}
+
+<div class="profile-dashboard">
+    <!-- Header Section -->
+    <header class="profile-header">
+        <h1 class="hero-title">Student Profile &amp; Interest Intelligence</h1>
+        <p class="hero-subtitle">
+            Build your academic background, skill profile, and career ambitions to power personalized guidance.
+        </p>
+
+        <!-- Mode Indicator Banner -->
+        <div class="mode-indicator-bar {% if active_profile %}mode-editing{% else %}mode-create{% endif %}">
+            <div class="mode-info">
+                {% if active_profile %}
+                    <span class="mode-badge badge-edit">Editing Mode</span>
+                    <span class="mode-text">Currently updating profile for <strong>{{ active_profile.full_name }}</strong> (ID: #{{ active_profile.id }})</span>
+                {% else %}
+                    <span class="mode-badge badge-create">New Profile</span>
+                    <span class="mode-text">Complete the form below to register a new student profile.</span>
+                {% endif %}
+            </div>
+            {% if active_profile %}
+                <button type="button" class="btn btn-outline btn-sm" onclick="resetFormToNew()">
+                    <span>➕ Switch to New Profile</span>
+                </button>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Global Alert / Status Notification Banner -->
+    <div id="status-banner" class="alert" style="display: none;" role="alert" aria-live="polite">
+        <span id="banner-icon" class="alert-icon">ℹ️</span>
+        <div id="banner-text" class="banner-text"></div>
+    </div>
+
+    <!-- Main Two-Column Layout -->
+    <div class="profile-grid">
+        <!-- Left Column: Profile Form (Create / Edit) -->
+        <section class="card form-container-card" aria-labelledby="form-heading">
+            <div class="form-header-row">
+                <div>
+                    <h2 id="form-heading" class="section-heading">
+                        {% if active_profile %}✏️ Edit Student Profile{% else %}📝 Create Student Profile{% endif %}
+                    </h2>
+                    <p class="form-subheading">All fields marked with <span class="required-star">*</span> are required.</p>
+                </div>
+                <span class="pill-badge pill-level">
+                    {% if active_profile %}Profile #{{ active_profile.id }}{% else %}Step 1 of 3{% endif %}
+                </span>
+            </div>
+
+            <form id="profile-form" novalidate onsubmit="handleProfileSubmit(event)">
+                <input type="hidden" id="profile_id" value="{{ active_profile.id if active_profile else '' }}">
+
+                <!-- 1. PERSONAL INFORMATION -->
+                <fieldset class="form-fieldset">
+                    <legend class="fieldset-legend">
+                        <span class="legend-num">1</span>
+                        <span>Personal Information</span>
+                    </legend>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="full_name" class="form-label">
+                                <span>Full Name <span class="required-star">*</span></span>
+                            </label>
+                            <input type="text" id="full_name" required placeholder="e.g. Alex Johnson"
+                                   value="{{ active_profile.full_name if active_profile else '' }}" class="form-input">
+                            <span id="err-full_name" class="field-error-msg"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email" class="form-label">
+                                <span>Email Address <span class="required-star">*</span></span>
+                            </label>
+                            <input type="email" id="email" required placeholder="e.g. alex@university.edu"
+                                   value="{{ active_profile.email if active_profile else '' }}" class="form-input">
+                            <span id="err-email" class="field-error-msg"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="location" class="form-label">Current Location</label>
+                            <input type="text" id="location" placeholder="e.g. Hyderabad, Telangana, India"
+                                   value="{{ active_profile.location if active_profile else '' }}" class="form-input">
+                            <span class="form-hint">City, State, or Country of residence.</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="preferred_locations" class="form-label">Preferred Study / Work Locations</label>
+                            <input type="text" id="preferred_locations" placeholder="e.g. Hyderabad, Bengaluru, Remote"
+                                   value="{{ locations_list | join(', ') }}" class="form-input">
+                            <span class="form-hint">Comma-separated target cities or "Remote".</span>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- 2. ACADEMIC QUALIFICATIONS -->
+                <fieldset class="form-fieldset">
+                    <legend class="fieldset-legend">
+                        <span class="legend-num">2</span>
+                        <span>Academic Qualifications</span>
+                    </legend>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="education_level" class="form-label">Academic Qualification</label>
+                            <select id="education_level" class="form-select" onchange="updateQualificationSections()">
+                                <option value="">Select your academic qualification</option>
+                                <option value="Undergraduate" {% if active_profile and active_profile.education_level == 'Undergraduate' %}selected{% endif %}>Undergraduate (B.Tech / B.Sc / BCA / B.Com / BA)</option>
+                                <option value="Diploma" {% if active_profile and active_profile.education_level == 'Diploma' %}selected{% endif %}>Diploma / Polytechnic</option>
+                                <option value="Postgraduate" {% if active_profile and active_profile.education_level == 'Postgraduate' %}selected{% endif %}>Postgraduate (M.Tech / MBA / MS / MCA / M.Sc)</option>
+                                <option value="Higher Secondary" {% if active_profile and active_profile.education_level == 'Higher Secondary' %}selected{% endif %}>Higher Secondary (12th / Intermediate)</option>
+                                <option value="Secondary" {% if active_profile and active_profile.education_level == 'Secondary' %}selected{% endif %}>Secondary (10th / SSC)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="qualification" class="form-label">Qualification Summary Title</label>
+                            <input type="text" id="qualification" placeholder="e.g. B.Tech in Computer Science"
+                                   value="{{ active_profile.qualification if active_profile else '' }}" class="form-input">
+                            <span class="form-hint">Brief title of current/highest degree or diploma.</span>
+                        </div>
+                    </div>
+
+                    <!-- Sub-Card A: Degree Details (Undergraduate) -->
+                    <div class="academic-subcard" id="section-undergraduate" style="display: {% if active_profile and active_profile.education_level == 'Undergraduate' %}block{% else %}none{% endif %};">
+                        <div class="subcard-header">
+                            <div class="subcard-title-group">
+                                <span class="subcard-icon">🎓</span>
+                                <h3 class="subcard-title">Undergraduate Details</h3>
+                            </div>
+                            <span class="pill-badge pill-level">Degree Level</span>
+                        </div>
+                        <p class="subcard-desc">Provide details if currently enrolled in or graduated from a bachelor's degree program.</p>
+
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="deg_name" class="form-label">Degree Title</label>
+                                <input type="text" id="deg_name" placeholder="e.g. B.Tech / B.Sc / BCA" class="form-input"
+                                       value="{{ deg.get('degree_name', '') }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="deg_major" class="form-label">Major / Specialization</label>
+                                <input type="text" id="deg_major" placeholder="e.g. Computer Science &amp; AI" class="form-input"
+                                       value="{{ deg.get('major', '') }}">
+                            </div>
+                        </div>
+
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="deg_inst" class="form-label">College / University</label>
+                                <input type="text" id="deg_inst" placeholder="e.g. JNTU Hyderabad / Osmania University" class="form-input"
+                                       value="{{ deg.get('institution', '') }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="deg_gpa" class="form-label">CGPA / Percentage</label>
+                                <input type="text" id="deg_gpa" placeholder="e.g. 8.7 / 10.0 or 85%" class="form-input"
+                                       value="{{ deg.get('gpa', '') }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sub-Card B: Diploma Details -->
+                    <div class="academic-subcard" id="section-diploma" style="display: {% if active_profile and active_profile.education_level == 'Diploma' %}block{% else %}none{% endif %};">
+                        <div class="subcard-header">
+                            <div class="subcard-title-group">
+                                <span class="subcard-icon">📜</span>
+                                <h3 class="subcard-title">Diploma Details</h3>
+                            </div>
+                            <span class="pill-badge pill-skill">Polytechnic / Diploma</span>
+                        </div>
+                        <p class="subcard-desc">Fill this section if you completed a polytechnic diploma or entered degree via lateral entry.</p>
+
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="dip_field" class="form-label">Diploma Stream</label>
+                                <input type="text" id="dip_field" placeholder="e.g. Diploma in Computer Engineering" class="form-input"
+                                       value="{{ dip.get('stream', '') }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="dip_inst" class="form-label">Polytechnic Institute</label>
+                                <input type="text" id="dip_inst" placeholder="e.g. Govt Polytechnic College" class="form-input"
+                                       value="{{ dip.get('institution', '') }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sub-Card C: Postgraduate Details -->
+                    <div class="academic-subcard" id="section-postgraduate" style="display: {% if active_profile and active_profile.education_level == 'Postgraduate' %}block{% else %}none{% endif %};">
+                        <div class="subcard-header">
+                            <div class="subcard-title-group">
+                                <span class="subcard-icon">🏛️</span>
+                                <h3 class="subcard-title">Postgraduate Details</h3>
+                            </div>
+                            <span class="pill-badge pill-interest">Master / Doctorate</span>
+                        </div>
+                        <p class="subcard-desc">Fill this section if you are pursuing or have completed a Master's degree, PG Diploma, or Doctorate.</p>
+
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="pg_name" class="form-label">PG Degree Title</label>
+                                <input type="text" id="pg_name" placeholder="e.g. M.Tech / MBA / MS / MCA" class="form-input"
+                                       value="{{ pg.get('degree_name', '') }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="pg_major" class="form-label">PG Specialization</label>
+                                <input type="text" id="pg_major" placeholder="e.g. Data Science &amp; Engineering" class="form-input"
+                                       value="{{ pg.get('specialization', '') }}">
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- 3. SKILLS INTELLIGENCE -->
+                <fieldset class="form-fieldset">
+                    <legend class="fieldset-legend">
+                        <span class="legend-num">3</span>
+                        <span>Technical &amp; Soft Skills</span>
+                    </legend>
+
+                    <div class="form-group">
+                        <label for="skills" class="form-label">Skills (comma-separated)</label>
+                        <input type="text" id="skills" placeholder="e.g. Python, SQL, Machine Learning, Flask, Git, Communication"
+                               value="{{ skills_list | join(', ') }}" class="form-input"
+                               oninput="updateSkillsLiveTags()">
+                        <span class="form-hint">Type skills separated by commas, or click the quick-add chips below:</span>
+                    </div>
+
+                    <!-- Quick Add Skill Suggestions -->
+                    <div class="chip-picker-row">
+                        <span class="chip-picker-label">Quick Suggestions:</span>
+                        <div class="chip-tags-list">
+                            <button type="button" class="pill-badge pill-skill pill-tag-interactive" onclick="addTagToInput('skills', 'Python')">+ Python</button>
+                            <button type="button" class="pill-badge pill-skill pill-tag-interactive" onclick="addTagToInput('skills', 'SQL')">+ SQL</button>
+                            <button type="button" class="pill-badge pill-skill pill-tag-interactive" onclick="addTagToInput('skills', 'Machine Learning')">+ Machine Learning</button>
+                            <button type="button" class="pill-badge pill-skill pill-tag-interactive" onclick="addTagToInput('skills', 'Flask')">+ Flask</button>
+                            <button type="button" class="pill-badge pill-skill pill-tag-interactive" onclick="addTagToInput('skills', 'Data Structures')">+ Data Structures</button>
+                            <button type="button" class="pill-badge pill-skill pill-tag-interactive" onclick="addTagToInput('skills', 'Cloud Architecture')">+ Cloud Architecture</button>
+                            <button type="button" class="pill-badge pill-skill pill-tag-interactive" onclick="addTagToInput('skills', 'Git & GitHub')">+ Git &amp; GitHub</button>
+                            <button type="button" class="pill-badge pill-skill pill-tag-interactive" onclick="addTagToInput('skills', 'Problem Solving')">+ Problem Solving</button>
+                        </div>
+                    </div>
+
+                    <!-- Live Skills Preview Box -->
+                    <div class="live-preview-box">
+                        <span class="live-preview-label">Live Skills Tag Cloud:</span>
+                        <div id="live-skills-container" class="tags-cloud-display">
+                            {% if skills_list %}
+                                {% for skill in skills_list %}
+                                    <span class="pill-badge pill-skill">{{ skill }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="empty-note">No skills added yet. Type or click suggestions above.</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Hidden input to preserve existing profile interests across saves -->
+                <input type="hidden" id="interests" value="{{ interests_list | join(', ') }}">
+
+                <!-- 4. CAREER ASPIRATIONS & PREFERENCES -->
+                <fieldset class="form-fieldset">
+                    <legend class="fieldset-legend">
+                        <span class="legend-num">4</span>
+                        <span>Career Aspirations &amp; Work Mode</span>
+                    </legend>
+
+                    <div class="form-group">
+                        <label for="career_goals" class="form-label">Primary Career Goal / Target Role</label>
+                        <input type="text" id="career_goals" placeholder="e.g. Machine Learning Engineer or Solutions Architect"
+                               value="{{ active_profile.career_goals if active_profile else '' }}" class="form-input">
+                        <span class="form-hint">Describe the role, industry, or goal you aspire toward.</span>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="work_mode" class="form-label">Preferred Work Mode</label>
+                            <select id="work_mode" class="form-select">
+                                <option value="Hybrid" {% if prefs.get('work_mode') == 'Hybrid' %}selected{% endif %}>Hybrid (Office + Remote)</option>
+                                <option value="Remote" {% if prefs.get('work_mode') == 'Remote' %}selected{% endif %}>Fully Remote</option>
+                                <option value="On-site" {% if prefs.get('work_mode') == 'On-site' %}selected{% endif %}>On-site (In-office)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="higher_study_pref" class="form-label">Higher Education Ambition</label>
+                            <select id="higher_study_pref" class="form-select">
+                                <option value="Undecided" {% if prefs.get('higher_study') == 'Undecided' %}selected{% endif %}>Undecided / Exploring</option>
+                                <option value="Open to Higher Studies" {% if prefs.get('higher_study') == 'Open to Higher Studies' %}selected{% endif %}>Open to Higher Studies (Masters / MBA / MS)</option>
+                                <option value="Direct Industry Placement" {% if prefs.get('higher_study') == 'Direct Industry Placement' %}selected{% endif %}>Seeking Direct Job Placement</option>
+                                <option value="Research & PhD" {% if prefs.get('higher_study') == 'Research & PhD' %}selected{% endif %}>Interested in Research &amp; Doctorate</option>
+                            </select>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Form Action Buttons -->
+                <div class="form-action-footer">
+                    <button type="submit" id="save-btn" class="btn btn-primary btn-lg">
+                        <span id="save-btn-text">
+                            {% if active_profile %}💾 Update Profile &rarr;{% else %}🚀 Create Profile &rarr;{% endif %}
+                        </span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="resetFormToNew()">
+                        <span>Clear / New</span>
+                    </button>
+                    {% if active_profile %}
+                        <a href="/api/profile/ui" class="btn btn-outline">
+                            <span>Cancel Edit</span>
+                        </a>
+                    {% endif %}
+                </div>
+            </form>
+        </section>
+
+        <!-- Right Column: Profile Summary & Profiles Directory -->
+        <aside class="sidebar-column" aria-label="Profile Summary &amp; Directory">
+            <!-- Profile Summary Card -->
+            <div class="card summary-card">
+                <div class="summary-header">
+                    <h2 class="card-heading">Active Profile Summary</h2>
+                    {% if active_profile %}
+                        <span class="pill-badge pill-skill">Active</span>
+                    {% else %}
+                        <span class="pill-badge pill-secondary">Empty State</span>
+                    {% endif %}
+                </div>
+
+                <div id="profile-summary-content">
+                    {% if active_profile %}
+                        <!-- Identity Header -->
+                        <div class="summary-identity">
+                            <div class="avatar-circle">{{ active_profile.full_name[:2].upper() }}</div>
+                            <div class="identity-text">
+                                <h3 class="student-name">{{ active_profile.full_name }}</h3>
+                                <a href="mailto:{{ active_profile.email }}" class="student-email" title="Click to email">{{ active_profile.email }}</a>
+                                <div class="identity-badges">
+                                    <span class="pill-badge pill-level">{{ active_profile.education_level or 'Level: Not provided yet' }}</span>
+                                    {% if active_profile.location %}
+                                        <span class="pill-badge pill-location">📍 {{ active_profile.location }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Summary Detail Items -->
+                        <div class="summary-field">
+                            <span class="field-title">Current Qualification:</span>
+                            <div class="field-value highlight-val">
+                                {{ active_profile.qualification or 'Not provided yet' }}
+                            </div>
+                        </div>
+
+                        <!-- Degree Details Breakdown -->
+                        {% if deg.get('degree_name') or deg.get('major') or deg.get('institution') %}
+                            <div class="summary-field">
+                                <span class="field-title">Degree Credentials:</span>
+                                <div class="field-subbox">
+                                    <strong>{{ deg.get('degree_name', '') }}</strong>
+                                    {% if deg.get('major') %} &bull; {{ deg.get('major') }}{% endif %}
+                                    {% if deg.get('institution') %}<div class="subbox-inst">{{ deg.get('institution') }}</div>{% endif %}
+                                    {% if deg.get('gpa') %}<div class="subbox-gpa">Score: {{ deg.get('gpa') }}</div>{% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- Diploma Details Breakdown -->
+                        {% if dip.get('stream') or dip.get('institution') %}
+                            <div class="summary-field">
+                                <span class="field-title">Diploma Credentials:</span>
+                                <div class="field-subbox">
+                                    <strong>{{ dip.get('stream', '') }}</strong>
+                                    {% if dip.get('institution') %}<div class="subbox-inst">{{ dip.get('institution') }}</div>{% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- Postgraduate Details Breakdown -->
+                        {% if pg.get('degree_name') or pg.get('specialization') %}
+                            <div class="summary-field">
+                                <span class="field-title">Postgraduate Credentials:</span>
+                                <div class="field-subbox">
+                                    <strong>{{ pg.get('degree_name', '') }}</strong>
+                                    {% if pg.get('specialization') %} &bull; {{ pg.get('specialization') }}{% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- Skills Tags -->
+                        <div class="summary-field">
+                            <span class="field-title">Skills &amp; Competencies:</span>
+                            <div class="tags-cloud-display">
+                                {% for skill in skills_list %}
+                                    <span class="pill-badge pill-skill">{{ skill }}</span>
+                                {% else %}
+                                    <span class="empty-note">Not provided yet</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Career Goal -->
+                        <div class="summary-field">
+                            <span class="field-title">Career Goal:</span>
+                            <div class="goal-highlight">
+                                🎯 {{ active_profile.career_goals or 'Not provided yet' }}
+                            </div>
+                        </div>
+
+                        <!-- Preferences -->
+                        <div class="summary-field">
+                            <span class="field-title">Preferences &amp; Work Mode:</span>
+                            <div class="tags-cloud-display">
+                                {% if prefs.get('work_mode') %}
+                                    <span class="pill-badge pill-level">💼 {{ prefs.get('work_mode') }}</span>
+                                {% endif %}
+                                {% if prefs.get('higher_study') %}
+                                    <span class="pill-badge pill-location">🎓 {{ prefs.get('higher_study') }}</span>
+                                {% endif %}
+                                {% for loc in locations_list %}
+                                    <span class="pill-badge pill-skill">📍 Prefers {{ loc }}</span>
+                                {% endfor %}
+                                {% if not prefs.get('work_mode') and not prefs.get('higher_study') and not locations_list %}
+                                    <span class="empty-note">Not provided yet</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="summary-actions-bar">
+                            <button type="button" class="btn btn-primary btn-sm btn-block" onclick="scrollToForm()">
+                                ✏️ Edit This Profile
+                            </button>
+                            <a href="/career/guidance/{{ active_profile.id }}" class="btn btn-secondary btn-sm btn-block" style="margin-top: 0.5rem; text-decoration: none; border-color: rgba(56, 189, 248, 0.4); color: var(--accent-blue) !important;">
+                                🧭 View Career Guidance &rarr;
+                            </a>
+                            <a href="/education/pathways/{{ active_profile.id }}" class="btn btn-secondary btn-sm btn-block" style="margin-top: 0.5rem; text-decoration: none; border-color: rgba(99, 102, 241, 0.4); color: #a5b4fc !important;">
+                                🎓 View Education Pathways &rarr;
+                            </a>
+                        </div>
+                    {% else %}
+                        <!-- Clean Empty State -->
+                        <div class="empty-summary-box">
+                            <div class="empty-icon">👤</div>
+                            <h3 class="empty-title">No Profile Selected</h3>
+                            <p class="empty-desc">
+                                Fill in the form on the left to create a new profile, or choose an existing student from the directory below.
+                            </p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Profiles Directory Card -->
+            <div class="card directory-card">
+                <div class="directory-header">
+                    <h3 class="card-heading">Registered Directory</h3>
+                    <span class="pill-badge pill-level">{{ profiles|length }} Profiles</span>
+                </div>
+
+                <!-- Live Search Box for Profiles -->
+                <div class="directory-search">
+                    <input type="text" id="dir-search" placeholder="🔍 Filter by name or email..."
+                           class="form-input form-input-sm" oninput="filterProfilesDirectory()">
+                </div>
+
+                <div id="directory-list" class="directory-list">
+                    {% for p in profiles %}
+                        <div class="directory-item {% if active_profile and active_profile.id == p.id %}active-directory-item{% endif %}"
+                             data-search="{{ p.full_name|lower }} {{ p.email|lower }}">
+                            <div class="dir-avatar">{{ p.full_name[:2].upper() }}</div>
+                            <div class="dir-info">
+                                <h4 class="dir-name">{{ p.full_name }}</h4>
+                                <p class="dir-meta">{{ p.email }}</p>
+                                <span class="dir-tag">{{ p.education_level or 'Level N/A' }}</span>
+                            </div>
+                            <div class="dir-action" style="display: flex; gap: 4px; flex-direction: column;">
+                                <a href="/api/profile/ui/{{ p.id }}" class="btn btn-outline btn-sm">
+                                    View &rarr;
+                                </a>
+                                <a href="/career/guidance/{{ p.id }}" class="btn btn-secondary btn-sm" style="font-size: 0.72rem; padding: 0.2rem 0.5rem;" title="Explore Career Guidance">
+                                    🧭 Guidance
+                                </a>
+                                <a href="/education/pathways/{{ p.id }}" class="btn btn-secondary btn-sm" style="font-size: 0.72rem; padding: 0.2rem 0.5rem; border-color: rgba(99, 102, 241, 0.4); color: #a5b4fc !important;" title="Explore Education Pathways">
+                                    🎓 Pathways
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="empty-directory">
+                            <p class="empty-note">No student profiles registered yet.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<style>
+/* ==========================================================================
+   Page Dashboard Layout & Scoped Enhancements
+   ========================================================================== */
+.profile-dashboard {
+    max-width: 1240px;
+    margin: 0 auto;
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 2.25rem;
+}
+
+/* Mode Indicator Bar */
+.mode-indicator-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.85rem 1.25rem;
+    border-radius: 10px;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+.mode-create {
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    color: #94a3b8;
+}
+.mode-editing {
+    background: rgba(168, 85, 247, 0.1);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    color: #e2e8f0;
+}
+.mode-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+.mode-badge {
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.badge-create {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+}
+.badge-edit {
+    background: rgba(168, 85, 247, 0.25);
+    color: #c084fc;
+}
+
+/* Main Two-Column Layout Grid */
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1.45fr 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+@media (max-width: 960px) {
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Form Container Card */
+.form-container-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 2.25rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+@media (max-width: 600px) {
+    .form-container-card {
+        padding: 1.25rem;
+    }
+}
+.form-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+    margin-bottom: 1.75rem;
+}
+.section-heading {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+.form-subheading {
+    font-size: 0.825rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+}
+
+/* Fieldset & Sections */
+.form-fieldset {
+    border: none;
+    padding: 0;
+    margin: 0 0 2rem 0;
+    border-bottom: 1px dashed rgba(51, 65, 85, 0.5);
+    padding-bottom: 1.75rem;
+}
+.form-fieldset:last-of-type {
+    border-bottom: none;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0;
+}
+.fieldset-legend {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 1.25rem;
+}
+.legend-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+    color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+
+/* 2-Column Form Rows */
+.form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+@media (max-width: 650px) {
+    .form-row-2 {
+        grid-template-columns: 1fr;
+        gap: 0.85rem;
+    }
+}
+.field-error-msg {
+    font-size: 0.775rem;
+    color: #f87171;
+    margin-top: 0.3rem;
+    display: none;
+}
+
+/* Academic Sub-Cards */
+.academic-subcard {
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(51, 65, 85, 0.6);
+    border-radius: 10px;
+    padding: 1.15rem 1.25rem;
+    margin-top: 1rem;
+    transition: border-color 0.2s ease;
+}
+.academic-subcard:hover {
+    border-color: rgba(56, 189, 248, 0.4);
+}
+.subcard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.4rem;
+}
+.subcard-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.subcard-icon {
+    font-size: 1.1rem;
+}
+.subcard-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+.subcard-desc {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+/* Chip Suggestion Rows */
+.chip-picker-row {
+    background: rgba(15, 23, 42, 0.35);
+    border: 1px solid rgba(51, 65, 85, 0.4);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+}
+.chip-picker-label {
+    font-size: 0.775rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+.chip-tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+/* Live Tag Cloud Display */
+.live-preview-box {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+}
+.live-preview-label {
+    font-size: 0.775rem;
+    color: #64748b;
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+}
+.tags-cloud-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    min-height: 28px;
+    align-items: center;
+}
+.empty-note {
+    font-size: 0.825rem;
+    color: #64748b;
+    font-style: italic;
+}
+
+/* Form Action Footer */
+.form-action-footer {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Right Column Sidebar */
+.sidebar-column {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Summary Card */
+.summary-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 1.75rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+.summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.85rem;
+    margin-bottom: 1.25rem;
+}
+.summary-identity {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+}
+.student-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+.student-email {
+    font-size: 0.85rem;
+    color: var(--accent-blue);
+    text-decoration: none;
+    display: block;
+    margin-bottom: 0.35rem;
+    word-break: break-all;
+}
+.student-email:hover {
+    text-decoration: underline;
+}
+.identity-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+.summary-field {
+    margin-bottom: 1.15rem;
+}
+.field-title {
+    font-size: 0.775rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 0.35rem;
+}
+.field-value {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+.highlight-val {
+    color: #e2e8f0;
+    font-weight: 500;
+}
+.field-subbox {
+    background: rgba(15, 23, 42, 0.5);
+    border-left: 3px solid var(--accent-indigo);
+    padding: 0.6rem 0.85rem;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.875rem;
+}
+.subbox-inst {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 0.2rem;
+}
+.subbox-gpa {
+    font-size: 0.775rem;
+    color: var(--accent-blue);
+    font-weight: 600;
+    margin-top: 0.2rem;
+}
+.goal-highlight {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #7dd3fc;
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 8px;
+    padding: 0.65rem 0.85rem;
+}
+.summary-actions-bar {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Empty State Card */
+.empty-summary-box {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+.empty-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.6;
+}
+.empty-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+.empty-desc {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    max-width: 280px;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
+/* Directory Card */
+.directory-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+.directory-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.directory-search {
+    margin-bottom: 1rem;
+}
+.form-input-sm {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.825rem;
+}
+.directory-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    max-height: 380px;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+}
+.directory-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+.directory-item:hover {
+    border-color: var(--accent-blue);
+    background: rgba(15, 23, 42, 0.85);
+    transform: translateX(2px);
+}
+.active-directory-item {
+    border-color: var(--accent-purple);
+    background: rgba(168, 85, 247, 0.08);
+}
+.dir-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(99, 102, 241, 0.4));
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.dir-info {
+    flex: 1;
+    min-width: 0;
+}
+.dir-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dir-meta {
+    font-size: 0.775rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dir-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    color: #a5b4fc;
+    margin-top: 0.2rem;
+}
+.empty-directory {
+    text-align: center;
+    padding: 1.5rem 0.5rem;
+}
+
+/* Interest Intelligence Analysis Card Styles */
+.analysis-card {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(168, 85, 247, 0.12));
+    border: 1px solid rgba(168, 85, 247, 0.45);
+    border-radius: 14px;
+    padding: 1.75rem 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    animation: fadeIn 0.3s ease-in-out;
+}
+.analysis-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(168, 85, 247, 0.25);
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+}
+.analysis-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.analysis-icon {
+    font-size: 1.8rem;
+}
+.analysis-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+.analysis-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+.analysis-section-block {
+    margin-bottom: 1.5rem;
+}
+.analysis-block-title {
+    font-size: 0.825rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--accent-blue);
+    margin-bottom: 0.75rem;
+}
+.analysis-interests-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.analysis-interest-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1.15rem;
+    transition: border-color 0.2s;
+}
+.mapped-card {
+    border-left: 4px solid var(--accent-purple);
+}
+.unmapped-card {
+    border-left: 4px solid #94a3b8;
+}
+.analysis-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+}
+.analysis-interest-name {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.original-tag {
+    font-size: 0.75rem;
+    color: #64748b;
+    font-style: italic;
+}
+.status-indicator {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+.status-mapped {
+    color: #34d399;
+}
+.status-unmapped {
+    color: #94a3b8;
+}
+.domain-reason-row {
+    margin-top: 0.6rem;
+    background: rgba(15, 23, 42, 0.45);
+    padding: 0.65rem 0.85rem;
+    border-radius: 6px;
+    border: 1px solid rgba(51, 65, 85, 0.3);
+}
+.domain-badge-name {
+    font-size: 0.85rem;
+    color: #e2e8f0;
+    margin-bottom: 0.25rem;
+}
+.domain-reason-text {
+    font-size: 0.825rem;
+    color: var(--text-secondary);
+    line-height: 1.45;
+}
+</style>
+
+<script>
+/**
+ * Interest Intelligence Handlers (Member 2 - Step 3)
+ */
+async function triggerAnalyzeFormInterests() {
+    const rawInterests = document.getElementById('interests').value;
+    const tags = parseCommaSeparatedTags(rawInterests);
+    if (tags.length === 0) {
+        showStatusBanner('Please enter at least one interest or click the suggestion chips above before analyzing.', false);
+        return;
+    }
+    await executeInterestsAnalysis({ interests: tags });
+}
+
+async function triggerProfileInterestsAnalysis(profileId) {
+    if (!profileId) return;
+    await executeInterestsAnalysis({ profile_id: profileId });
+}
+
+async function executeInterestsAnalysis(payload) {
+    const panel = document.getElementById('interests-analysis-panel');
+    const content = document.getElementById('analysis-content');
+    if (!panel || !content) return;
+
+    panel.style.display = 'block';
+    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    content.innerHTML = '<div style="text-align: center; padding: 2rem;"><span style="font-size: 1.6rem;">🧠</span><p style="color: var(--text-secondary); margin-top: 0.5rem;">Analyzing interest taxonomy and mapping career domains...</p></div>';
+
+    try {
+        const res = await fetch('/api/profile/interests/analyze', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (res.ok && data.status === 'success') {
+            renderAnalysisResults(data);
+        } else {
+            content.innerHTML = `<div class="alert alert-error"><span class="alert-icon">⚠️</span><div>${escapeHtml(data.message || 'Analysis failed')}</div></div>`;
+        }
+    } catch (err) {
+        content.innerHTML = `<div class="alert alert-error"><span class="alert-icon">⚠️</span><div>Network error connecting to analysis endpoint: ${escapeHtml(err.message)}</div></div>`;
+    }
+}
+
+function renderAnalysisResults(data) {
+    const content = document.getElementById('analysis-content');
+    if (!content) return;
+
+    let domainSummaryHtml = '';
+    if (data.domain_summary && data.domain_summary.length > 0) {
+        domainSummaryHtml = `
+            <div class="analysis-section-block">
+                <h4 class="analysis-block-title">Detected Career Domains (${data.domain_summary.length})</h4>
+                <div class="tags-cloud-display">
+                    ${data.domain_summary.map(d => `<span class="pill-badge pill-level" style="font-size: 0.825rem; padding: 0.35rem 0.85rem;">🌐 ${escapeHtml(d)}</span>`).join('')}
+                </div>
+            </div>
+        `;
+    } else {
+        domainSummaryHtml = `
+            <div class="analysis-section-block">
+                <h4 class="analysis-block-title">Detected Career Domains</h4>
+                <p class="empty-note">No standard career domains could be mapped from the entered interests.</p>
+            </div>
+        `;
+    }
+
+    let interestsGridHtml = '';
+    if (data.interests && data.interests.length > 0) {
+        interestsGridHtml = `
+            <div class="analysis-section-block">
+                <h4 class="analysis-block-title">Interest-to-Domain Mapping &amp; Explainability</h4>
+                <div class="analysis-interests-list">
+                    ${data.interests.map(item => `
+                        <div class="analysis-interest-card ${item.is_mapped ? 'mapped-card' : 'unmapped-card'}">
+                            <div class="analysis-card-top">
+                                <div class="analysis-interest-name">
+                                    <span class="pill-badge ${item.is_mapped ? 'pill-interest' : 'pill-secondary'}">${escapeHtml(item.name)}</span>
+                                    ${item.original.toLowerCase() !== item.name.toLowerCase() ? `<span class="original-tag">(Input: "${escapeHtml(item.original)}")</span>` : ''}
+                                </div>
+                                <span class="status-indicator ${item.is_mapped ? 'status-mapped' : 'status-unmapped'}">
+                                    ${item.is_mapped ? '✓ Mapped' : '❓ Novel / Unmapped'}
+                                </span>
+                            </div>
+                            <div class="analysis-domains-list">
+                                ${item.domains.map(dom => `
+                                    <div class="domain-reason-row">
+                                        <div class="domain-badge-name">📌 <strong>${escapeHtml(dom.name)}</strong></div>
+                                        <div class="domain-reason-text">${escapeHtml(dom.reason)}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    let unmappedAlertHtml = '';
+    if (data.unmapped_interests && data.unmapped_interests.length > 0) {
+        unmappedAlertHtml = `
+            <div class="alert alert-info" style="margin-top: 1rem;">
+                <span class="alert-icon">ℹ️</span>
+                <div>
+                    <strong>Unmapped / Specialized Interests (${data.unmapped_interests.length}):</strong>
+                    <div style="margin-top: 0.25rem;">The following interests are not yet catalogued in the standard taxonomy: <em>${data.unmapped_interests.map(u => escapeHtml(u)).join(', ')}</em>. They may represent emerging cross-disciplinary skills or specialized personal pursuits.</div>
+                </div>
+            </div>
+        `;
+    }
+
+    content.innerHTML = domainSummaryHtml + interestsGridHtml + unmappedAlertHtml;
+}
+
+function closeAnalysisPanel() {
+    const panel = document.getElementById('interests-analysis-panel');
+    if (panel) panel.style.display = 'none';
+}
+
+/**
+ * Real-time Tag Update & Quick-Add Support
+ */
+function parseCommaSeparatedTags(inputVal) {
+    if (!inputVal) return [];
+    return inputVal.split(',')
+        .map(t => t.trim())
+        .filter(t => t.length > 0);
+}
+
+function updateSkillsLiveTags() {
+    const el = document.getElementById('skills');
+    if (!el) return;
+    const raw = el.value;
+    const tags = parseCommaSeparatedTags(raw);
+    const container = document.getElementById('live-skills-container');
+    if (!container) return;
+    if (tags.length === 0) {
+        container.innerHTML = '<span class="empty-note">No skills added yet. Type or click suggestions above.</span>';
+    } else {
+        container.innerHTML = tags.map(t => `<span class="pill-badge pill-skill">${escapeHtml(t)}</span>`).join('');
+    }
+}
+
+function updateInterestsLiveTags() {
+    const el = document.getElementById('interests');
+    if (!el) return;
+    const raw = el.value;
+    const tags = parseCommaSeparatedTags(raw);
+    const container = document.getElementById('live-interests-container');
+    if (!container) return;
+    if (tags.length === 0) {
+        container.innerHTML = '<span class="empty-note">No interests specified yet. Type or click suggestions above.</span>';
+    } else {
+        container.innerHTML = tags.map(t => `<span class="pill-badge pill-interest">${escapeHtml(t)}</span>`).join('');
+    }
+}
+
+function addTagToInput(inputId, tagText) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const currentTags = parseCommaSeparatedTags(input.value);
+    if (!currentTags.some(t => t.toLowerCase() === tagText.toLowerCase())) {
+        currentTags.push(tagText);
+        input.value = currentTags.join(', ');
+        if (inputId === 'skills') updateSkillsLiveTags();
+        if (inputId === 'interests') updateInterestsLiveTags();
+    }
+}
+
+function escapeHtml(str) {
+    return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+}
+
+/**
+ * Filter Directory Items in real-time
+ */
+function filterProfilesDirectory() {
+    const searchInput = document.getElementById('dir-search');
+    if (!searchInput) return;
+    const query = searchInput.value.toLowerCase().trim();
+    const items = document.querySelectorAll('.directory-item');
+    items.forEach(item => {
+        const searchContent = item.getAttribute('data-search') || '';
+        if (searchContent.includes(query)) {
+            item.style.display = 'flex';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+/**
+ * Scroll and Reset utilities
+ */
+function scrollToForm() {
+    const formCard = document.querySelector('.form-container-card');
+    if (formCard) {
+        formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const nameInput = document.getElementById('full_name');
+        if (nameInput) nameInput.focus();
+    }
+}
+
+function resetFormToNew() {
+    window.location.href = '/api/profile/ui';
+}
+
+function showStatusBanner(message, isSuccess) {
+    const banner = document.getElementById('status-banner');
+    const icon = document.getElementById('banner-icon');
+    const text = document.getElementById('banner-text');
+    if (!banner || !icon || !text) return;
+
+    banner.className = 'alert ' + (isSuccess ? 'alert-success' : 'alert-error');
+    icon.textContent = isSuccess ? '✅' : '⚠️';
+    text.textContent = message;
+    banner.style.display = 'flex';
+    banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+/**
+ * Handle Profile Form Submission (Create or Update)
+ */
+async function handleProfileSubmit(e) {
+    e.preventDefault();
+
+    // Clear previous inline errors
+    document.querySelectorAll('.field-error-msg').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.form-input').forEach(el => el.classList.remove('is-invalid'));
+
+    const fullNameInput = document.getElementById('full_name');
+    const emailInput = document.getElementById('email');
+    let hasValidationError = false;
+
+    if (!fullNameInput || !fullNameInput.value.trim() || fullNameInput.value.trim().length < 2) {
+        if (fullNameInput) fullNameInput.classList.add('is-invalid');
+        const err = document.getElementById('err-full_name');
+        if (err) {
+            err.textContent = 'Please enter a valid full name (minimum 2 characters).';
+            err.style.display = 'block';
+        }
+        hasValidationError = true;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailInput || !emailInput.value.trim() || !emailRegex.test(emailInput.value.trim())) {
+        if (emailInput) emailInput.classList.add('is-invalid');
+        const err = document.getElementById('err-email');
+        if (err) {
+            err.textContent = 'Please enter a valid email address (e.g. user@example.com).';
+            err.style.display = 'block';
+        }
+        hasValidationError = true;
+    }
+
+    if (hasValidationError) {
+        showStatusBanner('Please correct the highlighted errors before saving.', false);
+        return;
+    }
+
+    const saveBtn = document.getElementById('save-btn');
+    const saveBtnText = document.getElementById('save-btn-text');
+    if (saveBtn) saveBtn.disabled = true;
+    const originalText = saveBtnText ? saveBtnText.textContent : 'Save Profile';
+    if (saveBtnText) saveBtnText.textContent = '⏳ Saving profile...';
+
+    const profileId = document.getElementById('profile_id').value;
+
+    const payload = {
+        full_name: fullNameInput.value.trim(),
+        email: emailInput.value.trim(),
+        education_level: document.getElementById('education_level').value,
+        qualification: document.getElementById('qualification').value.trim(),
+        location: document.getElementById('location').value.trim(),
+        preferred_locations: parseCommaSeparatedTags(document.getElementById('preferred_locations').value),
+        skills: parseCommaSeparatedTags(document.getElementById('skills').value),
+        interests: parseCommaSeparatedTags(document.getElementById('interests').value),
+        career_goals: document.getElementById('career_goals').value.trim(),
+        degree_details: {
+            degree_name: document.getElementById('deg_name').value.trim(),
+            major: document.getElementById('deg_major').value.trim(),
+            institution: document.getElementById('deg_inst').value.trim(),
+            gpa: document.getElementById('deg_gpa').value.trim()
+        },
+        diploma_details: {
+            stream: document.getElementById('dip_field').value.trim(),
+            institution: document.getElementById('dip_inst').value.trim()
+        },
+        pg_details: {
+            degree_name: document.getElementById('pg_name').value.trim(),
+            specialization: document.getElementById('pg_major').value.trim()
+        },
+        preferences: {
+            work_mode: document.getElementById('work_mode').value,
+            higher_study: document.getElementById('higher_study_pref').value
+        }
+    };
+
+    const isUpdate = Boolean(profileId);
+    const url = isUpdate ? `/api/profile/${profileId}` : '/api/profile';
+    const method = isUpdate ? 'PUT' : 'POST';
+
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'success') {
+            showStatusBanner(data.message || (isUpdate ? 'Profile updated successfully!' : 'Profile created successfully!'), true);
+            setTimeout(() => {
+                window.location.href = `/api/profile/ui/${data.profile.id}`;
+            }, 500);
+        } else {
+            showStatusBanner(data.message || 'An error occurred while saving profile.', false);
+            if (saveBtn) saveBtn.disabled = false;
+            if (saveBtnText) saveBtnText.textContent = originalText;
+        }
+    } catch (err) {
+        showStatusBanner('Network error connecting to server: ' + err.message, false);
+        if (saveBtn) saveBtn.disabled = false;
+        if (saveBtnText) saveBtnText.textContent = originalText;
+    }
+}
+
+/**
+ * Dynamic Academic Qualification Section Controller
+ */
+function updateQualificationSections() {
+    const eduSelect = document.getElementById('education_level');
+    const selectedVal = eduSelect ? eduSelect.value : '';
+
+    const ugSection = document.getElementById('section-undergraduate');
+    const dipSection = document.getElementById('section-diploma');
+    const pgSection = document.getElementById('section-postgraduate');
+
+    // Hide every qualification-specific section
+    if (ugSection) ugSection.style.display = 'none';
+    if (dipSection) dipSection.style.display = 'none';
+    if (pgSection) pgSection.style.display = 'none';
+
+    // Show ONLY matching section
+    if (selectedVal === 'Undergraduate') {
+        if (ugSection) ugSection.style.display = 'block';
+    } else if (selectedVal === 'Diploma') {
+        if (dipSection) dipSection.style.display = 'block';
+    } else if (selectedVal === 'Postgraduate') {
+        if (pgSection) pgSection.style.display = 'block';
+    }
+}
+
+// Initial live preview & qualification section bootstrap on page load
+document.addEventListener('DOMContentLoaded', () => {
+    updateQualificationSections();
+    const eduSelect = document.getElementById('education_level');
+    if (eduSelect) {
+        eduSelect.addEventListener('change', updateQualificationSections);
+    }
+    updateSkillsLiveTags();
+});
+</script>
+{% endblock %}
