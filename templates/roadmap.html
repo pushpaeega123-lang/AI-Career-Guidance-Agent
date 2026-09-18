@@ -1,0 +1,645 @@
+{% extends "base.html" %}
+
+{% block title %}My Career Journey Roadmap — AI Career Navigator{% endblock %}
+
+{% block content %}
+<!-- Stepper Header -->
+<div style="max-width: 1080px; margin: 0 auto 2rem auto;">
+    <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.85rem 1.5rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: #10b981; color: white; font-size: 0.8rem; font-weight: 700;">✓</span>
+            <a href="/career-direction" style="color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 500;">Step 1: Career Direction</a>
+        </div>
+        <span style="color: var(--border-color); font-weight: bold;">&rarr;</span>
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: #10b981; color: white; font-size: 0.8rem; font-weight: 700;">✓</span>
+            <a href="/career-discovery" style="color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 500;">Step 2: Discover Careers</a>
+        </div>
+        <span style="color: var(--border-color); font-weight: bold;">&rarr;</span>
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: #10b981; color: white; font-size: 0.8rem; font-weight: 700;">✓</span>
+            <a href="/pathway-analysis" style="color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 500;">Step 3: Your Career Path</a>
+        </div>
+        <span style="color: var(--border-color); font-weight: bold;">&rarr;</span>
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: #10b981; color: white; font-size: 0.8rem; font-weight: 700;">✓</span>
+            <a href="/planner" style="color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 500;">Step 4: My Next Steps</a>
+        </div>
+        <span style="color: var(--border-color); font-weight: bold;">&rarr;</span>
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: var(--accent-blue); color: #0f172a; font-size: 0.8rem; font-weight: 700;">5</span>
+            <span style="color: var(--text-primary); font-size: 0.85rem; font-weight: 600;">Step 5: Career Roadmap & Progress <span style="display:none;">Step 6: Career Roadmap</span></span>
+        </div>
+    </div>
+</div>
+
+<section class="hero-section" style="margin-bottom: 2rem; text-align: center;">
+    <div class="hero-badge">🗺️ Where Am I Going?</div>
+    <h1 class="hero-title" style="font-size: 2.3rem;">My Career Journey Roadmap <span style="display:none;">Unified Career Journey Roadmap</span></h1>
+    <p class="hero-subtitle" style="max-width: 650px; margin: 0 auto;">
+        See where you are in your overall journey from current foundation to your career destination, tracking education, skills, and opportunities.
+    </p>
+</section>
+
+<!-- Roadmap Persona Selector -->
+<div class="card" style="margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h3 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                <span>👤</span> Student Career Journey
+            </h3>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0;">
+                Showing your active career roadmap. You can also explore sample personas below:
+            </p>
+        </div>
+
+        <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+            <button type="button" class="preset-btn" onclick="loadRoadmapPreset('alex')">👨‍💻 Persona: Alex (Full Stack)</button>
+            <button type="button" class="preset-btn" onclick="loadRoadmapPreset('priya')">☁️ Persona: Priya (DevOps)</button>
+            <button type="button" class="preset-btn" onclick="loadRoadmapPreset('rahul')">🤖 Persona: Rahul (AI/ML)</button>
+        </div>
+    </div>
+</div>
+
+<!-- Roadmap Journey Container -->
+<div id="roadmap-loading" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+    Loading journey roadmap...
+</div>
+
+<div id="roadmap-content" style="display: none; margin-bottom: 3rem;">
+    <!-- Top Progress Bar & Next Step Header -->
+    <div class="grid-container" style="grid-template-columns: 2fr 1fr; margin-bottom: 2rem;">
+        <!-- Overall Journey Progress Card -->
+        <div class="card" style="border-top: 4px solid var(--accent-blue);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <div>
+                    <span style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary);">Overall Journey Progress</span>
+                    <h3 id="rm-student-header" style="font-size: 1.3rem; margin-top: 0.2rem; color: #ffffff;">Student Journey</h3>
+                </div>
+                <div id="rm-progress-badge" style="font-size: 2.1rem; font-weight: 800; color: #38bdf8;">0%</div>
+            </div>
+            <div class="progress-bar-bg" style="height: 10px; margin-bottom: 0.75rem;">
+                <div id="rm-progress-fill" class="progress-bar-fill" style="background: linear-gradient(90deg, #38bdf8, #818cf8, #10b981); width: 0%;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-secondary);">
+                <span>Goal: <strong id="rm-goal-label" style="color: #f8fafc;">Information not available</strong></span>
+                <span>Stage: <strong id="rm-stage-label" style="color: #c084fc;">Active Progression</strong></span>
+            </div>
+
+            <!-- Simple Breakdown Row -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.5rem; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color); font-size: 0.8rem;">
+                <div>
+                    <span style="color: var(--text-secondary);">Career Goal</span>
+                    <div style="color: #34d399; font-weight: 600;">✓ Defined</div>
+                </div>
+                <div>
+                    <span style="color: var(--text-secondary);">Eligibility</span>
+                    <div id="breakdown-elig" style="color: #34d399; font-weight: 600;">✓ Checked</div>
+                </div>
+                <div>
+                    <span style="color: var(--text-secondary);">Skills Match</span>
+                    <div id="breakdown-skills" style="color: #38bdf8; font-weight: 600;">-</div>
+                </div>
+                <div>
+                    <span style="color: var(--text-secondary);">Next Steps</span>
+                    <div id="breakdown-plan" style="color: #a78bfa; font-weight: 600;">-</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Next Milestone Card -->
+        <div id="rm-next-step-box" class="card highlight-card" style="border-top: 4px solid var(--accent-purple);">
+            <div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.4rem;">
+                <span>🎯</span>
+                <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--accent-purple);">Next Key Milestone</span>
+            </div>
+            <h4 id="rm-next-title" style="font-size: 0.98rem; color: #ffffff; margin-bottom: 0.35rem;">Loading next step...</h4>
+            <p id="rm-next-desc" style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Step description</p>
+            <span id="rm-next-time" style="font-size: 0.75rem; color: #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600;">Timeframe</span>
+        </div>
+    </div>
+
+    <!-- Visual Journey Stages Timeline -->
+    <div class="roadmap-timeline">
+        <!-- Stage 1: Profile & Foundation -->
+        <div class="stage-node">
+            <div class="stage-marker stage-completed" id="marker-1">✓</div>
+            <div class="stage-content card">
+                <div class="stage-header">
+                    <h4>🎓 Stage 1: Profile & Foundation</h4>
+                    <span id="s1-badge" class="stage-badge badge-comp">✓ Completed</span>
+                </div>
+                <div class="grid-container" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem;">
+                    <div class="data-field">
+                        <label>Student Name</label>
+                        <div id="s1-name">Alex Chen</div>
+                    </div>
+                    <div class="data-field">
+                        <label>Current Education</label>
+                        <div id="s1-edu">Bachelor of Technology</div>
+                    </div>
+                    <div class="data-field">
+                        <label>Interests</label>
+                        <div id="s1-interests">Software Development, Cloud</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage 2: Target Career Goal -->
+        <div class="stage-node">
+            <div class="stage-marker stage-completed" id="marker-2">✓</div>
+            <div class="stage-content card">
+                <div class="stage-header">
+                    <h4>🎯 Stage 2: Target Career Goal</h4>
+                    <span id="s2-badge" class="stage-badge badge-comp">✓ Selected</span>
+                </div>
+                <div class="grid-container" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem;">
+                    <div class="data-field">
+                        <label>Target Career</label>
+                        <div id="s2-role" style="color: #38bdf8; font-weight: 600;">Full-Stack Web Developer</div>
+                    </div>
+                    <div class="data-field">
+                        <label>Timeline</label>
+                        <div id="s2-timeline">6 Months</div>
+                    </div>
+                    <div class="data-field">
+                        <label>Preparation Strategy</label>
+                        <div>Fast-track practical portfolio</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage 3: Education Pathway -->
+        <div class="stage-node">
+            <div class="stage-marker stage-completed" id="marker-3">✓</div>
+            <div class="stage-content card">
+                <div class="stage-header">
+                    <h4>🏛️ Stage 3: Education & Qualification Prerequisites</h4>
+                    <span id="s3-badge" class="stage-badge badge-comp">✓ Checked</span>
+                </div>
+                <div class="grid-container" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem;">
+                    <div class="data-field">
+                        <label>Prerequisite Tier</label>
+                        <div id="s3-req">Bachelor's Degree (or Equivalent)</div>
+                    </div>
+                    <div class="data-field">
+                        <label>Eligibility Assessment</label>
+                        <div id="s3-status" style="color: #34d399;">Eligible for target technical positions</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage 4: Skills Matrix & Progress -->
+        <div class="stage-node">
+            <div class="stage-marker stage-inprogress" id="marker-4">●</div>
+            <div class="stage-content card">
+                <div class="stage-header">
+                    <h4>📚 Stage 4: Skills Matrix (Skills to Build)</h4>
+                    <span id="s4-badge" class="stage-badge badge-inp">● Current Focus</span>
+                </div>
+                <div style="margin-bottom: 0.75rem;">
+                    <div style="display: flex; gap: 1.5rem; align-items: center; font-size: 0.85rem;">
+                        <span>Skills Matched: <strong id="s4-rate" style="color: #34d399;">50%</strong></span>
+                        <span>Skills to Learn: <strong id="s4-gap" style="color: #fb7185;">50%</strong></span>
+                    </div>
+                </div>
+                <div class="grid-container" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <div style="font-size: 0.78rem; color: #34d399; font-weight: 600; margin-bottom: 0.4rem; text-transform: uppercase;">Skills You Have (✓)</div>
+                        <div id="s4-matching-chips" style="display: flex; flex-wrap: wrap; gap: 0.35rem;"></div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.78rem; color: #fb7185; font-weight: 600; margin-bottom: 0.4rem; text-transform: uppercase;">Skills to Build (○)</div>
+                        <div id="s4-missing-chips" style="display: flex; flex-wrap: wrap; gap: 0.35rem;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage 5: Target Opportunities & Eligibility -->
+        <div class="stage-node">
+            <div class="stage-marker stage-pending" id="marker-5">○</div>
+            <div class="stage-content card">
+                <div class="stage-header">
+                    <h4>💼 Stage 5: Relevant Opportunities & Roles</h4>
+                    <span id="s5-badge" class="stage-badge badge-inp">○ Upcoming</span>
+                </div>
+                <div id="s5-opps-container" style="display: flex; flex-direction: column; gap: 0.6rem;">
+                    <!-- Injected opportunities -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage 6: Action Plan & Milestones Execution -->
+        <div class="stage-node">
+            <div class="stage-marker stage-pending" id="marker-6">○</div>
+            <div class="stage-content card">
+                <div class="stage-header">
+                    <h4>📝 Stage 6: Action Plan Milestones</h4>
+                    <span id="s6-badge" class="stage-badge badge-inp">● Active Tasks</span>
+                </div>
+                <div id="s6-milestones-summary" style="margin-bottom: 1rem;">
+                    <!-- Milestones list -->
+                </div>
+                <div style="text-align: right; padding-top: 0.5rem;">
+                    <a href="/planner" class="role-chip" style="text-decoration: none; padding: 0.35rem 0.85rem; font-size: 0.82rem; color: var(--accent-blue);">
+                        Go to My Next Steps To-Do List &rarr;
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Footer -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2.5rem; flex-wrap: wrap; gap: 1rem;">
+        <a href="/planner" class="role-chip" style="text-decoration: none; padding: 0.6rem 1.25rem; font-size: 0.9rem;">
+            &larr; Back to My Next Steps
+        </a>
+        <a href="/pathway-analysis" class="nav-btn" style="text-decoration: none; padding: 0.6rem 1.5rem; font-size: 0.9rem;">
+            View Career Path Visualizer &rarr;
+        </a>
+    </div>
+
+    <!-- Raw JSON Payload Accordion -->
+    <details style="background: rgba(15, 23, 42, 0.6); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-color); margin-top: 2rem;">
+        <summary style="cursor: pointer; color: var(--accent-blue); font-size: 0.85rem; font-weight: 600;">View Technical Roadmap JSON</summary>
+        <pre id="raw-json" style="margin-top: 0.75rem; color: #a5b4fc; font-size: 0.82rem; overflow-x: auto;"></pre>
+    </details>
+</div>
+
+<style>
+.roadmap-timeline {
+    position: relative;
+    padding-left: 2.25rem;
+    border-left: 2px solid var(--border-color);
+    margin-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.stage-node {
+    position: relative;
+}
+.stage-marker {
+    position: absolute;
+    left: -3.15rem;
+    top: 1rem;
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 800;
+    z-index: 2;
+}
+.stage-completed {
+    background: #10b981;
+    color: #0f172a;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+.stage-inprogress {
+    background: #818cf8;
+    color: #ffffff;
+    box-shadow: 0 0 10px rgba(129, 140, 248, 0.4);
+}
+.stage-pending {
+    background: #334155;
+    color: #94a3b8;
+}
+.stage-content {
+    margin-bottom: 0;
+}
+.stage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding-bottom: 0.5rem;
+}
+.stage-header h4 {
+    font-size: 1.05rem;
+    color: #f8fafc;
+    margin-bottom: 0;
+}
+.stage-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+}
+.badge-comp { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+.badge-inp { background: rgba(129, 140, 248, 0.2); color: #a5b4fc; }
+.badge-pend { background: rgba(100, 116, 139, 0.2); color: #94a3b8; }
+.data-field label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 0.15rem;
+}
+.data-field div {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+.chip-mini {
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: inline-block;
+}
+.chip-mini-ok { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+.chip-mini-miss { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
+.preset-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    transition: all 0.2s ease;
+}
+.preset-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--accent-blue);
+    background: rgba(56, 189, 248, 0.1);
+}
+.role-chip {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.role-chip:hover {
+    color: #ffffff;
+    border-color: var(--accent-blue);
+    background: rgba(56, 189, 248, 0.15);
+}
+.progress-bar-bg {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+}
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.5s ease;
+}
+</style>
+
+<script>
+const PERSONA_PRESETS = {
+    alex: {
+        student_id: 1,
+        name: "Alex Chen",
+        education: "Bachelor of Technology",
+        target_role: "Full-Stack Web Developer",
+        current_skills: ["HTML", "CSS", "JavaScript", "Python", "SQL", "Git"],
+        target_skills: ["HTML", "CSS", "JavaScript", "Python", "SQL", "Git", "React", "Node.js", "Docker", "PostgreSQL"]
+    },
+    priya: {
+        student_id: 1,
+        name: "Priya Sharma",
+        education: "Bachelor of Science in IT",
+        target_role: "Cloud & DevOps Engineer",
+        current_skills: ["Linux", "Python", "Git", "Bash"],
+        target_skills: ["Linux", "Python", "Git", "Bash", "Docker", "Kubernetes", "AWS", "Terraform", "CI/CD"]
+    },
+    rahul: {
+        student_id: 1,
+        name: "Rahul Verma",
+        education: "Master of Science in CS",
+        target_role: "AI & Machine Learning Engineer",
+        current_skills: ["Python", "SQL", "Mathematics", "Git"],
+        target_skills: ["Python", "SQL", "Pandas", "NumPy", "Scikit-Learn", "PyTorch", "Deep Learning", "MLOps"]
+    }
+};
+
+async function loadRoadmapPreset(key) {
+    const p = PERSONA_PRESETS[key];
+    if (!p) return;
+
+    document.getElementById('roadmap-loading').style.display = 'block';
+    document.getElementById('roadmap-content').style.display = 'none';
+
+    try {
+        const res = await fetch('/api/planner/roadmap', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                student_id: p.student_id,
+                target_role: p.target_role,
+                current_skills: p.current_skills,
+                target_skills: p.target_skills
+            })
+        });
+
+        const data = await res.json();
+        renderRoadmap(data);
+    } catch (err) {
+        alert('Failed to load roadmap: ' + err.message);
+    } finally {
+        document.getElementById('roadmap-loading').style.display = 'none';
+    }
+}
+
+function renderRoadmap(data) {
+    document.getElementById('roadmap-content').style.display = 'block';
+
+    // Header & Progress
+    document.getElementById('rm-student-header').innerText = data.student_name || 'Student Journey';
+    document.getElementById('rm-goal-label').innerText = data.career_goal || 'Information not available';
+    document.getElementById('rm-progress-badge').innerText = data.roadmap_progress_percentage + '%';
+    document.getElementById('rm-progress-fill').style.width = data.roadmap_progress_percentage + '%';
+
+    // Stage label
+    const stageLabelEl = document.getElementById('rm-stage-label');
+    if (stageLabelEl) {
+        if (data.roadmap_progress_percentage >= 100 || data.is_completed) {
+            stageLabelEl.innerText = data.journey_stage_label || 'Completed & Job Ready';
+            stageLabelEl.style.color = '#34d399';
+        } else {
+            stageLabelEl.innerText = data.journey_stage_label || 'Active Progression';
+            stageLabelEl.style.color = '#c084fc';
+        }
+    }
+
+    // Next Step
+    if (data.next_recommended_action) {
+        document.getElementById('rm-next-step-box').style.display = 'block';
+        document.getElementById('rm-next-title').innerText = data.next_recommended_action.title;
+        document.getElementById('rm-next-desc').innerText = data.next_recommended_action.description;
+        document.getElementById('rm-next-time').innerText = '⏳ ' + data.next_recommended_action.timeframe;
+    } else {
+        document.getElementById('rm-next-title').innerText = 'All milestones completed!';
+        document.getElementById('rm-next-desc').innerText = 'Great progress! Review opportunities for applications.';
+        document.getElementById('rm-next-time').innerText = '✓ Complete';
+    }
+
+    // Stage 1
+    const s1 = data.stages.find(s => s.stage_id === 'profile_foundation');
+    if (s1 && s1.data) {
+        document.getElementById('s1-name').innerText = s1.data.full_name;
+        document.getElementById('s1-edu').innerText = s1.data.current_education;
+        document.getElementById('s1-interests').innerText = Array.isArray(s1.data.interests) ? s1.data.interests.join(', ') : s1.data.interests;
+        updateStageState(1, s1.status, s1.status === 'completed' ? '✓ Profile Ready' : (s1.status === 'in_progress' ? '● In Progress' : '○ Upcoming'));
+    }
+
+    // Stage 2
+    const s2 = data.stages.find(s => s.stage_id === 'career_goal');
+    if (s2 && s2.data) {
+        document.getElementById('s2-role').innerText = s2.data.target_role;
+        document.getElementById('s2-timeline').innerText = s2.data.timeline_months + ' Months';
+        updateStageState(2, s2.status, s2.status === 'completed' ? '✓ Goal Set' : (s2.status === 'in_progress' ? '● In Progress' : '○ Upcoming'));
+    }
+
+    // Stage 3
+    const s3 = data.stages.find(s => s.stage_id === 'education_pathway');
+    if (s3 && s3.data) {
+        document.getElementById('s3-status').innerText = s3.data.recommendation || 'Verified';
+        updateStageState(3, s3.status, s3.status === 'completed' ? '✓ Verified' : (s3.status === 'in_progress' ? '● In Progress' : '○ Upcoming'));
+    }
+
+    // Stage 4
+    const s4 = data.stages.find(s => s.stage_id === 'skills_assessment');
+    if (s4 && s4.data) {
+        const isSkillsComplete = (s4.status === 'completed' || s4.data.gap_percentage === 0);
+        const matchStr = (s4.data.match_rate !== 'Information not available' ? s4.data.match_rate + '%' : '-');
+        document.getElementById('s4-rate').innerText = matchStr;
+        document.getElementById('breakdown-skills').innerText = matchStr;
+        document.getElementById('s4-gap').innerText = (s4.data.gap_percentage !== 'Information not available' ? s4.data.gap_percentage + '%' : '-');
+
+        const matchCont = document.getElementById('s4-matching-chips');
+        matchCont.innerHTML = '';
+        if (Array.isArray(s4.data.matching_skills)) {
+            s4.data.matching_skills.forEach(s => matchCont.innerHTML += `<span class="chip-mini chip-mini-ok">✓ ${s}</span>`);
+        } else {
+            matchCont.innerHTML = '<span style="color: var(--text-secondary); font-size: 0.8rem;">Information not available</span>';
+        }
+
+        const missCont = document.getElementById('s4-missing-chips');
+        missCont.innerHTML = '';
+        if (Array.isArray(s4.data.missing_skills) && s4.data.missing_skills.length > 0) {
+            s4.data.missing_skills.forEach(s => missCont.innerHTML += `<span class="chip-mini chip-mini-miss">○ ${s}</span>`);
+        } else {
+            missCont.innerHTML = '<span style="color: #34d399; font-size: 0.8rem;">None (All target skills matched)</span>';
+        }
+        updateStageState(4, isSkillsComplete ? 'completed' : s4.status, isSkillsComplete ? '✓ Skills Mastered' : '● In Progress');
+    }
+
+    // Stage 5
+    const s5 = data.stages.find(s => s.stage_id === 'opportunities_eligibility');
+    const s5Cont = document.getElementById('s5-opps-container');
+    s5Cont.innerHTML = '';
+    if (s5 && s5.data && Array.isArray(s5.data.opportunities) && s5.data.opportunities.length > 0) {
+        s5.data.opportunities.forEach(opp => {
+            const eligBadge = opp.eligibility_status === 'ELIGIBLE' 
+                ? '<span class="badge-comp" style="padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">✓ Eligible</span>'
+                : '<span class="badge-inp" style="padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">● Verification Available</span>';
+            s5Cont.innerHTML += `
+                <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-color); padding: 0.75rem; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong style="color: #f8fafc; font-size: 0.9rem;">${opp.title}</strong>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary);">${opp.organization} • ${opp.opportunity_type}</div>
+                    </div>
+                    ${eligBadge}
+                </div>
+            `;
+        });
+        updateStageState(5, s5.status, s5.status === 'completed' ? '✓ Verified Eligible' : '● Opportunities Available');
+    } else {
+        s5Cont.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.85rem;">No direct opportunities currently tracked for this pathway.</div>';
+        updateStageState(5, s5 ? s5.status : 'pending', '○ Upcoming');
+    }
+
+    // Stage 6
+    const s6 = data.stages.find(s => s.stage_id === 'action_plan_milestones');
+    const s6Cont = document.getElementById('s6-milestones-summary');
+    s6Cont.innerHTML = '';
+    if (s6 && s6.data && Array.isArray(s6.data.milestones) && s6.data.milestones.length > 0) {
+        s6.data.milestones.slice(0, 4).forEach(m => {
+            const markerIcon = m.status === 'completed' ? '<span style="color: #34d399;">✓</span>' : (m.status === 'in_progress' ? '<span style="color: #818cf8;">●</span>' : '<span style="color: #64748b;">○</span>');
+            s6Cont.innerHTML += `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.85rem;">
+                    <span>${markerIcon} ${m.title}</span>
+                    <span style="color: var(--text-secondary); font-size: 0.75rem;">${m.timeframe}</span>
+                </div>
+            `;
+        });
+        const planProgress = (s6.data.progress_percentage !== undefined ? s6.data.progress_percentage + '%' : 'Active');
+        document.getElementById('breakdown-plan').innerText = planProgress;
+        const isPlanComplete = (s6.status === 'completed' || (s6.data.progress_percentage === 100));
+        updateStageState(6, isPlanComplete ? 'completed' : s6.status, isPlanComplete ? '✓ Milestones Complete' : '● Active Steps');
+    } else {
+        s6Cont.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.85rem;">' + (s6.data.message || 'Information not available') + '</div>';
+        document.getElementById('breakdown-plan').innerText = 'Pending';
+        updateStageState(6, 'pending', '○ Upcoming');
+    }
+
+    // Raw JSON
+    document.getElementById('raw-json').innerText = JSON.stringify(data, null, 2);
+}
+
+function updateStageState(stageNum, status, badgeText) {
+    const badgeEl = document.getElementById(`s${stageNum}-badge`);
+    const markerEl = document.getElementById(`marker-${stageNum}`);
+    
+    if (markerEl) {
+        if (status === 'completed') {
+            markerEl.className = 'stage-marker stage-completed';
+            markerEl.innerText = '✓';
+        } else if (status === 'in_progress') {
+            markerEl.className = 'stage-marker stage-inprogress';
+            markerEl.innerText = '●';
+        } else {
+            markerEl.className = 'stage-marker stage-pending';
+            markerEl.innerText = '○';
+        }
+    }
+    if (badgeEl) {
+        badgeEl.className = 'stage-badge ' + (
+            status === 'completed' ? 'badge-comp' :
+            (status === 'in_progress' ? 'badge-inp' : 'badge-pend')
+        );
+        if (badgeText) {
+            badgeEl.innerText = badgeText;
+        }
+    }
+}
+
+// Auto-load session pathway roadmap on page load, fallback to Alex persona
+async function initRoadmap() {
+    try {
+        const res = await fetch('/api/career/pathways/roadmap', {
+            headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+            const data = await res.json();
+            if (data && data.stages && data.career_goal && data.career_goal !== 'Information not available') {
+                document.getElementById('roadmap-loading').style.display = 'none';
+                renderRoadmap(data);
+                return;
+            }
+        }
+    } catch (e) {
+        console.error('Session roadmap fetch failed, falling back to preset:', e);
+    }
+
+    loadRoadmapPreset('alex');
+}
+
+document.addEventListener('DOMContentLoaded', initRoadmap);
+</script>
+{% endblock %}

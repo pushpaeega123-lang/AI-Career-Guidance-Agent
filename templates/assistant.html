@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+
+{% block title %}Multi-Agent Career Guidance Orchestrator — AI Career Navigator{% endblock %}
+
+{% block content %}
+<section class="hero-section" style="margin-bottom: 2rem;">
+    <div class="hero-badge">🤖 Multi-Agent Orchestration Layer</div>
+    <h1 class="hero-title">Intelligent Career Agent Assistant</h1>
+    <p class="hero-subtitle">
+        Coordinating specialized autonomous agents for eligibility verification, skill gap assessment, action planning, and roadmap synthesis.
+    </p>
+</section>
+
+<!-- Quick Action Presets -->
+<div style="display: flex; gap: 0.6rem; margin-bottom: 1.5rem; flex-wrap: wrap; justify-content: center;">
+    <button type="button" class="preset-btn" onclick="loadAgentPreset('multi_agent')">⚡ Coordinated Multi-Agent Guidance</button>
+    <button type="button" class="preset-btn" onclick="loadAgentPreset('eligibility')">🎓 Check Eligibility</button>
+    <button type="button" class="preset-btn" onclick="loadAgentPreset('skill_gap')">📊 Analyze Skill Gap</button>
+    <button type="button" class="preset-btn" onclick="loadAgentPreset('planner')">🗺️ Generate 6-Month Action Plan</button>
+    <button type="button" class="preset-btn" onclick="loadAgentPreset('unclear')">🔍 Test Clarification Query</button>
+</div>
+
+<!-- Request Console Card -->
+<div class="card" style="margin-bottom: 2rem;">
+    <h3 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+        <span>💬</span> Agent Query & Context Dispatcher
+    </h3>
+
+    <div style="margin-bottom: 1rem;">
+        <label style="font-size: 0.82rem; color: var(--text-secondary); display: block; margin-bottom: 0.35rem;">Career Guidance Query</label>
+        <input type="text" id="agent_query_input" class="custom-input" placeholder="e.g. How do I transition to a Cloud & DevOps Engineer?" value="How do I become a Cloud & DevOps Engineer?">
+    </div>
+
+    <div class="grid-container" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+        <div>
+            <label style="font-size: 0.82rem; color: var(--text-secondary); display: block; margin-bottom: 0.35rem;">Target Role</label>
+            <input type="text" id="ctx_target_role" class="custom-input" value="Cloud & DevOps Engineer">
+        </div>
+        <div>
+            <label style="font-size: 0.82rem; color: var(--text-secondary); display: block; margin-bottom: 0.35rem;">Current Skills (comma-separated)</label>
+            <input type="text" id="ctx_current_skills" class="custom-input" value="Python, Linux, Git, Bash">
+        </div>
+        <div>
+            <label style="font-size: 0.82rem; color: var(--text-secondary); display: block; margin-bottom: 0.35rem;">Target Skills (comma-separated)</label>
+            <input type="text" id="ctx_target_skills" class="custom-input" value="Linux, Python, Git, Docker, Kubernetes, AWS, Terraform, CI/CD">
+        </div>
+    </div>
+
+    <div style="text-align: right;">
+        <button type="button" id="dispatch-btn" class="nav-btn" style="cursor: pointer; border: none; padding: 0.65rem 2rem; border-radius: 6px;" onclick="dispatchAgentRequest()">
+            🚀 Dispatch to Agent Orchestrator
+        </button>
+    </div>
+</div>
+
+<!-- Active Agent Ribbon & Results Section -->
+<div id="agent-response-area" style="display: none; margin-bottom: 3rem;">
+    <!-- Active Agent Header -->
+    <div class="card" style="border-top: 4px solid var(--accent-purple); margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem;">
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <span style="font-size: 1.2rem;">🤖</span>
+                <span id="agent-badge" class="prio-badge badge-rec" style="font-size: 0.85rem; padding: 0.25rem 0.65rem;">Agent Used</span>
+                <span id="intent-badge" class="prio-badge badge-opt" style="font-size: 0.85rem; padding: 0.25rem 0.65rem;">Intent</span>
+            </div>
+            <span id="status-badge" style="font-size: 0.8rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 4px;"></span>
+        </div>
+
+        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.85rem 1rem; margin-bottom: 1rem;">
+            <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.25rem;">Orchestrator Explanation</div>
+            <div id="agent-explanation" style="font-size: 0.95rem; color: #f8fafc; line-height: 1.5;"></div>
+        </div>
+
+        <!-- Next Recommended Action Hero Box -->
+        <div id="next-action-box" style="display: flex; align-items: center; gap: 0.75rem; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 6px; padding: 0.75rem 1rem;">
+            <span style="font-size: 1.3rem;">⚡</span>
+            <div>
+                <div style="font-size: 0.75rem; font-weight: 700; color: #38bdf8; text-transform: uppercase;">Recommended Next Action</div>
+                <div id="agent-next-action" style="font-size: 0.92rem; color: #f8fafc;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Domain Specific Result Cards -->
+    <div id="domain-results-container" style="display: flex; flex-direction: column; gap: 1.5rem; margin-bottom: 1.5rem;">
+        <!-- Injected cards for skills, eligibility, plan, roadmap -->
+    </div>
+
+    <!-- Raw JSON Accordion -->
+    <details style="background: rgba(15, 23, 42, 0.6); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-color);">
+        <summary style="cursor: pointer; color: var(--accent-blue); font-size: 0.85rem; font-weight: 600;">View Raw Orchestration JSON Payload</summary>
+        <pre id="raw-json" style="margin-top: 0.75rem; color: #a5b4fc; font-size: 0.82rem; overflow-x: auto;"></pre>
+    </details>
+</div>
+
+<style>
+.custom-input {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+.custom-input:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+}
+.preset-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    transition: all 0.2s ease;
+}
+.preset-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--accent-blue);
+    background: rgba(56, 189, 248, 0.1);
+}
+.prio-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+}
+.badge-crit { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+.badge-rec { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+.badge-opt { background: rgba(56, 189, 248, 0.2); color: #38bdf8; }
+.chip-mini {
+    padding: 0.15rem 0.45rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: inline-block;
+}
+.chip-mini-ok { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+.chip-mini-miss { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
+</style>
+
+<script>
+const AGENT_PRESETS = {
+    multi_agent: {
+        query: "How do I become a Cloud & DevOps Engineer?",
+        target_role: "Cloud & DevOps Engineer",
+        current_skills: "Python, Linux, Git, Bash",
+        target_skills: "Linux, Python, Git, Docker, Kubernetes, AWS, Terraform, CI/CD"
+    },
+    eligibility: {
+        query: "Am I eligible for the Junior DevOps Engineer position?",
+        target_role: "Junior DevOps Engineer",
+        current_skills: "Python, Linux, B.Tech in CS",
+        target_skills: "Python, Linux, Bachelor's Degree"
+    },
+    skill_gap: {
+        query: "What is my skill gap for becoming a Data Scientist?",
+        target_role: "Data Scientist",
+        current_skills: "Python, SQL, HTML",
+        target_skills: "Python, SQL, Pandas, NumPy, Scikit-Learn, PyTorch, Deep Learning"
+    },
+    planner: {
+        query: "Create a 6-month action plan and milestones for Full Stack Developer",
+        target_role: "Full-Stack Web Developer",
+        current_skills: "HTML, CSS, JavaScript",
+        target_skills: "HTML, CSS, JavaScript, React, Node.js, Docker, PostgreSQL"
+    },
+    unclear: {
+        query: "Hello there!",
+        target_role: "",
+        current_skills: "",
+        target_skills: ""
+    }
+};
+
+function loadAgentPreset(key) {
+    const p = AGENT_PRESETS[key];
+    if (!p) return;
+    document.getElementById('agent_query_input').value = p.query;
+    document.getElementById('ctx_target_role').value = p.target_role;
+    document.getElementById('ctx_current_skills').value = p.current_skills;
+    document.getElementById('ctx_target_skills').value = p.target_skills;
+}
+
+async function dispatchAgentRequest() {
+    const btn = document.getElementById('dispatch-btn');
+    btn.disabled = true;
+    btn.innerText = 'Orchestrating...';
+
+    const query = document.getElementById('agent_query_input').value.trim();
+    const role = document.getElementById('ctx_target_role').value.trim();
+    const current = document.getElementById('ctx_current_skills').value.split(',').map(s => s.trim()).filter(Boolean);
+    const target = document.getElementById('ctx_target_skills').value.split(',').map(s => s.trim()).filter(Boolean);
+
+    const payload = {
+        query: query,
+        context: {
+            student_id: 1,
+            target_role: role,
+            current_skills: current,
+            target_skills: target
+        }
+    };
+
+    try {
+        const res = await fetch('/api/agents/orchestrate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        renderAgentResponse(data);
+    } catch (err) {
+        alert('Agent Orchestration Failed: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerText = '🚀 Dispatch to Agent Orchestrator';
+    }
+}
+
+function renderAgentResponse(data) {
+    const responseArea = document.getElementById('agent-response-area');
+    responseArea.style.display = 'block';
+
+    document.getElementById('agent-badge').innerText = data.agent_used || 'Orchestrator';
+    document.getElementById('intent-badge').innerText = 'Intent: ' + data.intent;
+
+    const statusBadge = document.getElementById('status-badge');
+    if (data.status === 'success') {
+        statusBadge.innerText = '✓ Success';
+        statusBadge.style.background = 'rgba(16, 185, 129, 0.2)';
+        statusBadge.style.color = '#34d399';
+    } else if (data.status === 'clarification_needed') {
+        statusBadge.innerText = '🔍 Clarification Needed';
+        statusBadge.style.background = 'rgba(245, 158, 11, 0.2)';
+        statusBadge.style.color = '#fbbf24';
+    } else {
+        statusBadge.innerText = '⚠️ Notice / Partial';
+        statusBadge.style.background = 'rgba(244, 63, 94, 0.2)';
+        statusBadge.style.color = '#fb7185';
+    }
+
+    document.getElementById('agent-explanation').innerText = data.explanation || 'Request processed.';
+    document.getElementById('agent-next-action').innerText = data.recommended_next_action || 'Review results.';
+
+    // Render domain result cards
+    const resultsContainer = document.getElementById('domain-results-container');
+    resultsContainer.innerHTML = '';
+
+    if (data.result) {
+        // 1. Skill Gap Result
+        const sg = data.result.skill_gap || (data.intent === 'skill_gap' ? data.result : null);
+        if (sg && typeof sg === 'object') {
+            resultsContainer.innerHTML += `
+                <div class="card">
+                    <h4 style="color: #38bdf8; margin-bottom: 0.6rem;">📊 Skill Gap Analysis Results</h4>
+                    <div style="display: flex; gap: 1rem; margin-bottom: 0.75rem;">
+                        <span>Match Rate: <strong style="color: #34d399;">${sg.match_rate}%</strong></span>
+                        <span>Gap: <strong style="color: #fb7185;">${sg.gap_percentage}%</strong></span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                        <div>
+                            <div style="font-size: 0.75rem; color: #34d399; margin-bottom: 0.25rem;">Matching Skills</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.3rem;">
+                                ${sg.matching_skills && sg.matching_skills.length ? sg.matching_skills.map(s => `<span class="chip-mini chip-mini-ok">✓ ${s}</span>`).join('') : '<span style="color: var(--text-secondary); font-size: 0.8rem;">None</span>'}
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.75rem; color: #fb7185; margin-bottom: 0.25rem;">Missing Skills</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.3rem;">
+                                ${sg.missing_skills && sg.missing_skills.length ? sg.missing_skills.map(s => `<span class="chip-mini chip-mini-miss">✗ ${s}</span>`).join('') : '<span style="color: #34d399; font-size: 0.8rem;">None (Full Match)</span>'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 2. Action Plan Result
+        const plan = data.result.action_plan || (data.intent === 'planner' ? data.result : null);
+        if (plan && typeof plan === 'object' && Array.isArray(plan.milestones)) {
+            const milestoneSnippets = plan.milestones.slice(0, 4).map(m => `
+                <li style="margin-bottom: 0.35rem; font-size: 0.85rem;">
+                    <strong>[${m.timeframe}]</strong> ${m.title} <span style="font-size: 0.75rem; color: #38bdf8;">(${m.category})</span>
+                </li>
+            `).join('');
+
+            resultsContainer.innerHTML += `
+                <div class="card">
+                    <h4 style="color: #c084fc; margin-bottom: 0.6rem;">🗺️ Generated Action Milestones (${plan.total_milestones} Total)</h4>
+                    <ul style="padding-left: 1.2rem; color: var(--text-primary); margin-bottom: 0;">
+                        ${milestoneSnippets}
+                    </ul>
+                </div>
+            `;
+        }
+    }
+
+    // Raw JSON
+    document.getElementById('raw-json').innerText = JSON.stringify(data, null, 2);
+    responseArea.scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+{% endblock %}

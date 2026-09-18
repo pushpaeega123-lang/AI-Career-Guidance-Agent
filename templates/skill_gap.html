@@ -1,0 +1,402 @@
+{% extends "base.html" %}
+
+{% block title %}Skill Gap Analysis Dashboard — AI Career Navigator{% endblock %}
+
+{% block content %}
+<section class="hero-section" style="margin-bottom: 2rem;">
+    <div class="hero-badge">📊 Deterministic Skills Matrix</div>
+    <h1 class="hero-title">Skill Gap Analysis Engine</h1>
+    <p class="hero-subtitle">
+        Assess student readiness against target career requirements with precision match metrics and structured learning roadmaps.
+    </p>
+</section>
+
+<!-- Preset Scenarios -->
+<div style="display: flex; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap; justify-content: center;">
+    <button type="button" class="preset-btn" onclick="loadPreset('backend_cloud')">☁️ Preset: Backend &rarr; DevOps Gap</button>
+    <button type="button" class="preset-btn" onclick="loadPreset('web_to_aiml')">🤖 Preset: Web Dev &rarr; AI/ML Gap</button>
+    <button type="button" class="preset-btn" onclick="loadPreset('full_match')">✨ Preset: 100% Full Match</button>
+    <button type="button" class="preset-btn" onclick="loadPreset('zero_match')">❌ Preset: Zero Match (New Domain)</button>
+</div>
+
+<!-- Input Form Grid -->
+<div class="grid-container" style="grid-template-columns: 1fr 1fr; margin-bottom: 2rem;">
+    <!-- Student Current Skills Card -->
+    <div class="card">
+        <h3 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+            <span>👨‍💻</span> Current Student Skills
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+            Enter skills possessed by the student (comma or newline separated).
+        </p>
+        <textarea id="current_skills_input" class="custom-textarea" rows="5" placeholder="e.g. Python, Flask, SQL, Git, Linux">Python, Flask, PostgreSQL, Git</textarea>
+    </div>
+
+    <!-- Target Career Required Skills Card -->
+    <div class="card">
+        <h3 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+            <span>🎯</span> Target Career Required Skills
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+            Enter skills required for target role or pathway.
+        </p>
+        <textarea id="target_skills_input" class="custom-textarea" rows="5" placeholder="e.g. Python, Flask, SQL, Docker, Kubernetes, AWS, CI/CD">Python, Flask, PostgreSQL, Docker, Kubernetes, AWS, Terraform, Git</textarea>
+    </div>
+</div>
+
+<div style="text-align: center; margin-bottom: 2.5rem;">
+    <button type="button" id="analyze-btn" class="nav-btn" style="cursor: pointer; border: none; font-size: 1.1rem; padding: 0.75rem 2.5rem; border-radius: 8px;" onclick="runSkillGapAnalysis()">
+        ⚡ Run Skill Gap Analysis
+    </button>
+</div>
+
+<!-- Dashboard Results Area -->
+<div id="results-dashboard" style="display: none; margin-bottom: 3rem;">
+    <!-- KPI Summary Row -->
+    <div class="grid-container" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 1.75rem;">
+        <div class="card stat-card" style="border-top: 4px solid #38bdf8;">
+            <div class="stat-label">Match Rate</div>
+            <div id="stat-match-rate" class="stat-value" style="color: #38bdf8;">--</div>
+            <div class="progress-bar-bg">
+                <div id="progress-match-bar" class="progress-bar-fill" style="background: linear-gradient(90deg, #38bdf8, #6366f1); width: 0%;"></div>
+            </div>
+        </div>
+
+        <div class="card stat-card" style="border-top: 4px solid #f43f5e;">
+            <div class="stat-label">Skill Gap</div>
+            <div id="stat-gap-rate" class="stat-value" style="color: #fb7185;">--</div>
+            <div class="progress-bar-bg">
+                <div id="progress-gap-bar" class="progress-bar-fill" style="background: linear-gradient(90deg, #f43f5e, #fb923c); width: 0%;"></div>
+            </div>
+        </div>
+
+        <div class="card stat-card" style="border-top: 4px solid #818cf8;">
+            <div class="stat-label">Total Required</div>
+            <div id="stat-total-req" class="stat-value" style="color: #c7d2fe;">0</div>
+            <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;">Total skills analyzed</div>
+        </div>
+
+        <div class="card stat-card" style="border-top: 4px solid #34d399;">
+            <div class="stat-label">Acquired Skills</div>
+            <div id="stat-total-matched" class="stat-value" style="color: #34d399;">0</div>
+            <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;">Matches target criteria</div>
+        </div>
+    </div>
+
+    <!-- Skills Breakdown Columns -->
+    <div class="grid-container" style="grid-template-columns: 1fr 1fr; margin-bottom: 1.75rem;">
+        <!-- Matching Skills Cloud -->
+        <div class="card">
+            <h3 style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <span style="color: #34d399;">✓ Matching Skills</span>
+                <span id="badge-match-count" class="card-tag" style="position: static; background: rgba(16, 185, 129, 0.2); color: #34d399;">0</span>
+            </h3>
+            <div id="matching-chips" style="display: flex; flex-wrap: wrap; gap: 0.5rem; min-height: 60px;">
+                <!-- Matching chips injected here -->
+            </div>
+        </div>
+
+        <!-- Missing Skills Cloud -->
+        <div class="card">
+            <h3 style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <span style="color: #fb7185;">✗ Missing Skills</span>
+                <span id="badge-missing-count" class="card-tag" style="position: static; background: rgba(244, 63, 94, 0.2); color: #fb7185;">0</span>
+            </h3>
+            <div id="missing-chips" style="display: flex; flex-wrap: wrap; gap: 0.5rem; min-height: 60px;">
+                <!-- Missing chips injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Priority Breakdown Row -->
+    <div class="card" style="margin-bottom: 1.75rem;">
+        <h3 style="margin-bottom: 1.25rem;">📌 Missing Skills by Priority Level</h3>
+        <div class="grid-container" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;">
+            <!-- Critical Priority -->
+            <div class="priority-box" style="border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <strong style="color: #f87171;">🔴 Critical Priority</strong>
+                    <span id="prio-crit-count" class="prio-badge badge-crit">0</span>
+                </div>
+                <div id="prio-crit-list" class="prio-list">None</div>
+            </div>
+
+            <!-- Recommended Priority -->
+            <div class="priority-box" style="border-left: 4px solid #a855f7; background: rgba(168, 85, 247, 0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <strong style="color: #c084fc;">🟣 Recommended</strong>
+                    <span id="prio-rec-count" class="prio-badge badge-rec">0</span>
+                </div>
+                <div id="prio-rec-list" class="prio-list">None</div>
+            </div>
+
+            <!-- Optional Priority -->
+            <div class="priority-box" style="border-left: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <strong style="color: #7dd3fc;">🔵 Optional / Secondary</strong>
+                    <span id="prio-opt-count" class="prio-badge badge-opt">0</span>
+                </div>
+                <div id="prio-opt-list" class="prio-list">None</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Learning Areas Section -->
+    <div class="card" style="margin-bottom: 1.75rem;">
+        <h3 style="margin-bottom: 1.25rem;">📚 Mapped Learning Areas</h3>
+        <div id="learning-areas-grid" class="grid-container" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;">
+            <!-- Learning area cards injected here -->
+        </div>
+    </div>
+
+    <!-- Raw JSON Toggle -->
+    <details style="background: rgba(15, 23, 42, 0.6); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-color);">
+        <summary style="cursor: pointer; color: var(--accent-blue); font-size: 0.85rem; font-weight: 600;">View Raw JSON Response</summary>
+        <pre id="raw-json" style="margin-top: 0.75rem; color: #a5b4fc; font-size: 0.82rem; overflow-x: auto;"></pre>
+    </details>
+</div>
+
+<style>
+.custom-textarea {
+    width: 100%;
+    padding: 0.75rem;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.9rem;
+    resize: vertical;
+}
+.custom-textarea:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+}
+.preset-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.4rem 0.85rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+.preset-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--accent-blue);
+    background: rgba(56, 189, 248, 0.1);
+}
+.stat-card {
+    text-align: center;
+    padding: 1.25rem 1rem;
+}
+.stat-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    margin-bottom: 0.35rem;
+}
+.stat-value {
+    font-size: 2.1rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+}
+.progress-bar-bg {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+}
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.6s ease;
+}
+.skill-chip {
+    padding: 0.3rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+.chip-match {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.chip-missing {
+    background: rgba(244, 63, 94, 0.15);
+    color: #fb7185;
+    border: 1px solid rgba(244, 63, 94, 0.3);
+}
+.priority-box {
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+.prio-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+}
+.badge-crit { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+.badge-rec { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+.badge-opt { background: rgba(56, 189, 248, 0.2); color: #38bdf8; }
+.prio-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+.area-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    border-radius: 8px;
+}
+</style>
+
+<script>
+const PRESETS = {
+    backend_cloud: {
+        current: "Python, Flask, PostgreSQL, Git",
+        target: "Python, Flask, PostgreSQL, Docker, Kubernetes, AWS, Terraform, Git"
+    },
+    web_to_aiml: {
+        current: "HTML, CSS, JavaScript, React, Node.js",
+        target: "Python, SQL, Pandas, NumPy, Scikit-Learn, PyTorch, Machine Learning, Git"
+    },
+    full_match: {
+        current: "Python, FastAPI, Docker, PostgreSQL, Redis, Git, Linux",
+        target: "Python, FastAPI, Docker, PostgreSQL, Redis, Git"
+    },
+    zero_match: {
+        current: "Graphic Design, Adobe Photoshop, Figma",
+        target: "Java, Spring Boot, MySQL, Kubernetes, Docker, Microservices"
+    }
+};
+
+function loadPreset(key) {
+    const p = PRESETS[key];
+    if (!p) return;
+    document.getElementById('current_skills_input').value = p.current;
+    document.getElementById('target_skills_input').value = p.target;
+}
+
+async function runSkillGapAnalysis() {
+    const btn = document.getElementById('analyze-btn');
+    btn.disabled = true;
+    btn.innerText = 'Analyzing...';
+
+    const payload = {
+        current_skills: document.getElementById('current_skills_input').value,
+        target_skills: document.getElementById('target_skills_input').value
+    };
+
+    try {
+        const res = await fetch('/api/skill-gap/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        renderResults(data);
+    } catch (err) {
+        alert('Failed to analyze skill gap: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerText = '⚡ Run Skill Gap Analysis';
+    }
+}
+
+function renderResults(data) {
+    const dashboard = document.getElementById('results-dashboard');
+    dashboard.style.display = 'block';
+
+    // Stats
+    document.getElementById('stat-match-rate').innerText = data.match_rate + '%';
+    document.getElementById('stat-gap-rate').innerText = data.gap_percentage + '%';
+    document.getElementById('stat-total-req').innerText = data.total_required;
+    document.getElementById('stat-total-matched').innerText = data.total_matched;
+
+    document.getElementById('progress-match-bar').style.width = data.match_rate + '%';
+    document.getElementById('progress-gap-bar').style.width = data.gap_percentage + '%';
+
+    document.getElementById('badge-match-count').innerText = data.matching_skills.length;
+    document.getElementById('badge-missing-count').innerText = data.missing_skills.length;
+
+    // Matching Chips
+    const matchContainer = document.getElementById('matching-chips');
+    matchContainer.innerHTML = '';
+    if (data.matching_skills.length === 0) {
+        matchContainer.innerHTML = '<span style="color: var(--text-secondary); font-size: 0.85rem;">No matching skills found</span>';
+    } else {
+        data.matching_skills.forEach(s => {
+            matchContainer.innerHTML += `<span class="skill-chip chip-match">✓ ${s}</span>`;
+        });
+    }
+
+    // Missing Chips
+    const missingContainer = document.getElementById('missing-chips');
+    missingContainer.innerHTML = '';
+    if (data.missing_skills.length === 0) {
+        missingContainer.innerHTML = '<span style="color: #34d399; font-size: 0.85rem;">🎉 Zero skill gaps! All required skills matched.</span>';
+    } else {
+        data.missing_skills.forEach(s => {
+            missingContainer.innerHTML += `<span class="skill-chip chip-missing">✗ ${s}</span>`;
+        });
+    }
+
+    // Priorities
+    const prio = data.priority_breakdown || { critical: [], recommended: [], optional: [] };
+    
+    document.getElementById('prio-crit-count').innerText = prio.critical.length;
+    const critList = document.getElementById('prio-crit-list');
+    critList.innerHTML = prio.critical.length === 0 ? '<span style="color: var(--text-secondary);">None</span>' : prio.critical.map(s => `<span class="skill-chip chip-missing">${s}</span>`).join('');
+
+    document.getElementById('prio-rec-count').innerText = prio.recommended.length;
+    const recList = document.getElementById('prio-rec-list');
+    recList.innerHTML = prio.recommended.length === 0 ? '<span style="color: var(--text-secondary);">None</span>' : prio.recommended.map(s => `<span class="skill-chip" style="background: rgba(168,85,247,0.15); color: #c084fc; border: 1px solid rgba(168,85,247,0.3);">${s}</span>`).join('');
+
+    document.getElementById('prio-opt-count').innerText = prio.optional.length;
+    const optList = document.getElementById('prio-opt-list');
+    optList.innerHTML = prio.optional.length === 0 ? '<span style="color: var(--text-secondary);">None</span>' : prio.optional.map(s => `<span class="skill-chip" style="background: rgba(56,189,248,0.15); color: #38bdf8; border: 1px solid rgba(56,189,248,0.3);">${s}</span>`).join('');
+
+    // Learning Areas
+    const areasGrid = document.getElementById('learning-areas-grid');
+    areasGrid.innerHTML = '';
+    if (!data.learning_areas || data.learning_areas.length === 0) {
+        areasGrid.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.9rem;">No learning areas required.</div>';
+    } else {
+        data.learning_areas.forEach(area => {
+            const chips = area.skills.map(s => `<span class="skill-chip" style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-color); color: #f8fafc; font-size: 0.78rem;">${s}</span>`).join('');
+            areasGrid.innerHTML += `
+                <div class="area-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <strong style="color: var(--text-primary); font-size: 0.92rem;">${area.area}</strong>
+                        <span class="prio-badge badge-rec">${area.count} skills</span>
+                    </div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
+                        ${chips}
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // Raw JSON
+    document.getElementById('raw-json').innerText = JSON.stringify(data, null, 2);
+
+    dashboard.scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+{% endblock %}

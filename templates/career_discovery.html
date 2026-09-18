@@ -1,0 +1,587 @@
+{% extends "base.html" %}
+
+{% block title %}Career Discovery Questionnaire — AI Career Navigator{% endblock %}
+
+{% block content %}
+<!-- Journey Stepper -->
+<div style="max-width: 1080px; margin: 0 auto 2rem auto;">
+    <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.85rem 1.5rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: #10b981; color: white; font-size: 0.8rem; font-weight: 700;">✓</span>
+            <a href="/career-direction" style="color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 500;">Step 1: Career Direction</a>
+        </div>
+        <span style="color: var(--border-color); font-weight: bold;">&rarr;</span>
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: var(--accent-blue); color: #0f172a; font-size: 0.8rem; font-weight: 700;">2</span>
+            <span style="color: var(--text-primary); font-size: 0.85rem; font-weight: 600;">Step 2: Discover Careers</span>
+        </div>
+        <span style="color: var(--border-color); font-weight: bold;">&rarr;</span>
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: rgba(51, 65, 85, 0.8); color: var(--text-secondary); font-size: 0.8rem; font-weight: 700;">3</span>
+            <span style="color: var(--text-secondary); font-size: 0.85rem;">Step 3: Your Career Path</span>
+        </div>
+        <span style="color: var(--border-color); font-weight: bold;">&rarr;</span>
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: rgba(51, 65, 85, 0.8); color: var(--text-secondary); font-size: 0.8rem; font-weight: 700;">4</span>
+            <span style="color: var(--text-secondary); font-size: 0.85rem;">Step 4: My Next Steps</span>
+        </div>
+        <span style="color: var(--border-color); font-weight: bold;">&rarr;</span>
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: rgba(51, 65, 85, 0.8); color: var(--text-secondary); font-size: 0.8rem; font-weight: 700;">5</span>
+            <span style="color: var(--text-secondary); font-size: 0.85rem;">Step 5: Career Roadmap</span>
+        </div>
+    </div>
+</div>
+
+<!-- Header Section -->
+<section class="hero-section" style="margin-bottom: 2.5rem;">
+    <div class="hero-badge">🧭 Career Discovery</div>
+    <h1 class="hero-title" style="font-size: 2.2rem;">Tell us about your background & interests</h1>
+    <p class="hero-subtitle">
+        We'll collect structured evidence about your education, skills, interests, and preferences so our multi-agent system can recommend tailored career pathways.
+    </p>
+</section>
+
+<!-- Main Questionnaire Form -->
+<form id="discovery-form" style="max-width: 960px; margin: 0 auto;" onsubmit="handleDiscoverySubmit(event)">
+
+    <!-- Section 1: Education Level -->
+    <div class="card form-section-card">
+        <div class="section-header">
+            <span class="section-num">1</span>
+            <div>
+                <h3 class="section-title-text">Your Education Level <span style="color: #fb7185;">*</span></h3>
+                <p class="section-desc">Select your current or highest completed qualification.</p>
+            </div>
+        </div>
+
+        <div class="chip-group" id="edu-chip-group">
+            <button type="button" class="select-pill" onclick="selectEdu('Class 10')">Class 10</button>
+            <button type="button" class="select-pill" onclick="selectEdu('Intermediate / 12th')">Intermediate / 12th</button>
+            <button type="button" class="select-pill" onclick="selectEdu('Diploma')">Diploma</button>
+            <button type="button" class="select-pill" onclick="selectEdu('Undergraduate')">Undergraduate</button>
+            <button type="button" class="select-pill" onclick="selectEdu('B.Tech')">B.Tech</button>
+            <button type="button" class="select-pill" onclick="selectEdu('B.Sc')">B.Sc</button>
+            <button type="button" class="select-pill" onclick="selectEdu('B.Com')">B.Com</button>
+            <button type="button" class="select-pill" onclick="selectEdu('B.A')">B.A</button>
+            <button type="button" class="select-pill" onclick="selectEdu('Postgraduate')">Postgraduate</button>
+            <button type="button" class="select-pill" onclick="selectEdu('Other')">Other</button>
+        </div>
+
+        <div id="edu-other-container" style="display: none; margin-top: 1rem;">
+            <input type="text" id="edu-other-input" class="custom-input" placeholder="Specify your education level..." oninput="handleEduOtherInput(this.value)">
+        </div>
+        <input type="hidden" id="education_level" name="education_level">
+    </div>
+
+    <!-- Section 2: Subjects Enjoyed -->
+    <div class="card form-section-card">
+        <div class="section-header">
+            <span class="section-num">2</span>
+            <div>
+                <h3 class="section-title-text">What Subjects Do You Enjoy?</h3>
+                <p class="section-desc">Select all subjects or academic fields you find interesting.</p>
+            </div>
+        </div>
+
+        <div class="chip-group" id="subjects-group">
+            <button type="button" class="toggle-chip" onclick="toggleMulti('subjects', 'Mathematics', this)">Mathematics</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('subjects', 'Biology', this)">Biology</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('subjects', 'Physics', this)">Physics</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('subjects', 'Chemistry', this)">Chemistry</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('subjects', 'Computer Science', this)">Computer Science</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('subjects', 'Commerce', this)">Commerce</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('subjects', 'Arts', this)">Arts</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('subjects', 'Languages', this)">Languages</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('subjects', 'Social Sciences', this)">Social Sciences</button>
+        </div>
+
+        <div style="margin-top: 0.85rem; display: flex; gap: 0.5rem;">
+            <input type="text" id="custom-subject-input" class="custom-input" placeholder="Add another subject..." style="max-width: 320px; font-size: 0.85rem; padding: 0.45rem 0.75rem;">
+            <button type="button" class="nav-btn" style="padding: 0.45rem 0.9rem; font-size: 0.85rem;" onclick="addCustomChip('subjects', 'custom-subject-input', 'subjects-group')">+ Add</button>
+        </div>
+    </div>
+
+    <!-- Section 3: Current Skills -->
+    <div class="card form-section-card">
+        <div class="section-header">
+            <span class="section-num">3</span>
+            <div>
+                <h3 class="section-title-text">Your Current Skills <span style="font-size: 0.8rem; color: var(--accent-blue);">(At least one skill or interest required)</span></h3>
+                <p class="section-desc">Skills you have developed through school, college, projects, or hobbies.</p>
+            </div>
+        </div>
+
+        <div class="chip-group" id="skills-group">
+            <button type="button" class="toggle-chip" onclick="toggleMulti('skills', 'Programming', this)">Programming</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('skills', 'Communication', this)">Communication</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('skills', 'Problem Solving', this)">Problem Solving</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('skills', 'Mathematics', this)">Mathematics</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('skills', 'Data Analysis', this)">Data Analysis</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('skills', 'Writing', this)">Writing</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('skills', 'Leadership', this)">Leadership</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('skills', 'Design', this)">Design</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('skills', 'Creativity', this)">Creativity</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('skills', 'Teamwork', this)">Teamwork</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('skills', 'Public Speaking', this)">Public Speaking</button>
+        </div>
+
+        <div style="margin-top: 0.85rem; display: flex; gap: 0.5rem;">
+            <input type="text" id="custom-skill-input" class="custom-input" placeholder="Add another skill..." style="max-width: 320px; font-size: 0.85rem; padding: 0.45rem 0.75rem;">
+            <button type="button" class="nav-btn" style="padding: 0.45rem 0.9rem; font-size: 0.85rem;" onclick="addCustomChip('skills', 'custom-skill-input', 'skills-group')">+ Add</button>
+        </div>
+    </div>
+
+    <!-- Section 4: Interests -->
+    <div class="card form-section-card">
+        <div class="section-header">
+            <span class="section-num">4</span>
+            <div>
+                <h3 class="section-title-text">Your Interests</h3>
+                <p class="section-desc">Industries, domains, and problem areas you are curious about.</p>
+            </div>
+        </div>
+
+        <div class="chip-group" id="interests-group">
+            <button type="button" class="toggle-chip" onclick="toggleMulti('interests', 'Technology', this)">Technology</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('interests', 'Healthcare', this)">Healthcare</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('interests', 'Engineering', this)">Engineering</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('interests', 'Business', this)">Business</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('interests', 'Finance', this)">Finance</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('interests', 'Government/Public Service', this)">Government / Public Service</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('interests', 'Education', this)">Education</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('interests', 'Research', this)">Research</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('interests', 'Design/Creative', this)">Design / Creative</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('interests', 'Agriculture', this)">Agriculture</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('interests', 'Law', this)">Law</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('interests', 'Media', this)">Media</button>
+        </div>
+
+        <div style="margin-top: 0.85rem; display: flex; gap: 0.5rem;">
+            <input type="text" id="custom-interest-input" class="custom-input" placeholder="Add another interest..." style="max-width: 320px; font-size: 0.85rem; padding: 0.45rem 0.75rem;">
+            <button type="button" class="nav-btn" style="padding: 0.45rem 0.9rem; font-size: 0.85rem;" onclick="addCustomChip('interests', 'custom-interest-input', 'interests-group')">+ Add</button>
+        </div>
+    </div>
+
+    <!-- Section 5: Preferred Work Style -->
+    <div class="card form-section-card">
+        <div class="section-header">
+            <span class="section-num">5</span>
+            <div>
+                <h3 class="section-title-text">What Kind of Work Do You Prefer?</h3>
+                <p class="section-desc">Select environments and day-to-day work styles that fit you.</p>
+            </div>
+        </div>
+
+        <div class="chip-group" id="work-group">
+            <button type="button" class="toggle-chip" onclick="toggleMulti('work_preferences', 'Working with technology', this)">Working with technology</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('work_preferences', 'Working with people', this)">Working with people</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('work_preferences', 'Working with data', this)">Working with data</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('work_preferences', 'Working with machines', this)">Working with machines</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('work_preferences', 'Creative work', this)">Creative work</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('work_preferences', 'Research/problem solving', this)">Research / problem solving</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('work_preferences', 'Field/outdoor work', this)">Field / outdoor work</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('work_preferences', 'Office-based work', this)">Office-based work</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('work_preferences', 'Combination', this)">Combination</button>
+        </div>
+    </div>
+
+    <!-- Section 6: Career Preferences -->
+    <div class="card form-section-card">
+        <div class="section-header">
+            <span class="section-num">6</span>
+            <div>
+                <h3 class="section-title-text">Career Sector Preferences</h3>
+                <p class="section-desc">Sectors and pathways you would like to consider.</p>
+            </div>
+        </div>
+
+        <div class="chip-group" id="career-prefs-group">
+            <button type="button" class="toggle-chip" onclick="toggleMulti('career_preferences', 'Private sector', this)">Private sector</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('career_preferences', 'Government sector', this)">Government sector</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('career_preferences', 'Higher education/research', this)">Higher education / research</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('career_preferences', 'Entrepreneurship', this)">Entrepreneurship</button>
+            <button type="button" class="toggle-chip" onclick="toggleMulti('career_preferences', 'Open to multiple options', this)">Open to multiple options</button>
+        </div>
+    </div>
+
+    <!-- Section 7: Optional Free-Text Information -->
+    <div class="card form-section-card">
+        <div class="section-header">
+            <span class="section-num">7</span>
+            <div>
+                <h3 class="section-title-text">Anything Else You Want Us To Know? <span style="font-size: 0.8rem; color: var(--text-secondary);">(Optional)</span></h3>
+                <p class="section-desc">Tell us anything else about your interests, strengths, or the kind of future you imagine.</p>
+            </div>
+        </div>
+
+        <textarea id="additional_information" class="custom-input" rows="3" placeholder="e.g. I am passionate about AI and healthcare innovation, enjoy fast-paced problem solving, and want to explore higher studies or startup opportunities..." style="resize: vertical;"></textarea>
+    </div>
+
+    <!-- Error Display Alert -->
+    <div id="form-error-alert" style="display: none; background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.4); border-radius: 8px; padding: 1rem; color: #fb7185; margin-bottom: 1.5rem; font-size: 0.9rem;">
+        ⚠️ <span id="form-error-text">Please resolve the error above.</span>
+    </div>
+
+    <!-- Actions & Submission -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4rem; flex-wrap: wrap; gap: 1rem;">
+        <a href="/career-direction" class="nav-btn" style="text-decoration: none; background: rgba(30, 41, 59, 0.9); border: 1px solid var(--border-color); color: var(--text-secondary) !important; padding: 0.65rem 1.25rem;">
+            &larr; Back to Career Direction
+        </a>
+        <button type="submit" id="btn-submit-discovery" class="nav-btn" style="border: none; cursor: pointer; padding: 0.75rem 2rem; font-size: 1rem; font-weight: 600; background: linear-gradient(135deg, var(--accent-purple), var(--accent-indigo));">
+            Continue to Career Discovery &rarr;
+        </button>
+    </div>
+</form>
+
+<!-- Profile Summary / Confirmation Card -->
+<div id="discovery-summary-card" class="card highlight-card" style="display: none; max-width: 960px; margin: 0 auto 4rem auto;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+        <div>
+            <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--accent-purple); letter-spacing: 0.05em;">Exploration Profile Established</span>
+            <h2 id="sum-title" style="margin-top: 0.25rem; margin-bottom: 0.25rem; font-size: 1.4rem;">Student Profile Ready for Discovery</h2>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0;">
+                Your evidence profile has been structured and recorded. It will guide our multi-agent discovery engine.
+            </p>
+        </div>
+        <span class="prio-badge badge-comp" style="font-size: 0.85rem; padding: 0.35rem 0.85rem;">✓ Profile Saved</span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; background: rgba(15, 23, 42, 0.6); padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-color);">
+        <div>
+            <span style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Education Level</span>
+            <div id="sum-edu" style="font-weight: 600; color: #ffffff; margin-top: 0.2rem;">-</div>
+        </div>
+        <div>
+            <span style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Skills Captured</span>
+            <div id="sum-skills" style="color: var(--accent-blue); font-size: 0.9rem; margin-top: 0.2rem;">-</div>
+        </div>
+        <div>
+            <span style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Interests</span>
+            <div id="sum-interests" style="color: #c084fc; font-size: 0.9rem; margin-top: 0.2rem;">-</div>
+        </div>
+        <div>
+            <span style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Work & Sector Preferences</span>
+            <div id="sum-prefs" style="color: #94a3b8; font-size: 0.9rem; margin-top: 0.2rem;">-</div>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
+        <a href="/pathway-discovery" class="nav-btn" style="text-decoration: none; padding: 0.65rem 1.5rem; font-size: 0.95rem; background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple)); font-weight: 600;">
+            🔍 View Career Recommendations &rarr;
+        </a>
+        <a href="/api/agents/demo" class="nav-btn" style="text-decoration: none; padding: 0.65rem 1.2rem; font-size: 0.88rem; background: rgba(30, 41, 59, 0.9); border: 1px solid var(--border-color); color: var(--text-secondary) !important;">
+            🤖 Consult AI Assistant
+        </a>
+        <a href="/career-direction" class="nav-btn" style="text-decoration: none; padding: 0.65rem 1.2rem; font-size: 0.88rem; background: rgba(30, 41, 59, 0.9); border: 1px solid var(--border-color); color: var(--text-secondary) !important;">
+            Edit Career Direction
+        </a>
+    </div>
+</div>
+
+<style>
+.form-section-card {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    background: rgba(30, 41, 59, 0.75);
+}
+.section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+.section-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(168, 85, 247, 0.2);
+    color: var(--accent-purple);
+    font-weight: 700;
+    font-size: 0.88rem;
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    flex-shrink: 0;
+}
+.section-title-text {
+    font-size: 1.15rem;
+    margin-bottom: 0.2rem;
+    color: #ffffff;
+}
+.section-desc {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0;
+}
+.chip-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+.select-pill, .toggle-chip {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.45rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+.select-pill:hover, .toggle-chip:hover {
+    border-color: var(--accent-blue);
+    color: #ffffff;
+}
+.chip-active {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.3)) !important;
+    border-color: var(--accent-purple) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+}
+.custom-input {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+.custom-input:focus {
+    outline: none;
+    border-color: var(--accent-purple);
+}
+.prio-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+}
+.badge-comp { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+</style>
+
+<script>
+const profileState = {
+    education_level: '',
+    subjects: new Set(),
+    skills: new Set(),
+    interests: new Set(),
+    work_preferences: new Set(),
+    career_preferences: new Set(),
+    additional_information: ''
+};
+
+function selectEdu(level) {
+    const pills = document.querySelectorAll('#edu-chip-group .select-pill');
+    pills.forEach(p => p.classList.remove('chip-active'));
+
+    const otherContainer = document.getElementById('edu-other-container');
+
+    if (level === 'Other') {
+        otherContainer.style.display = 'block';
+        const otherInput = document.getElementById('edu-other-input');
+        profileState.education_level = otherInput.value.trim() || 'Other';
+        event.target.classList.add('chip-active');
+        otherInput.focus();
+    } else {
+        otherContainer.style.display = 'none';
+        profileState.education_level = level;
+        event.target.classList.add('chip-active');
+    }
+    document.getElementById('education_level').value = profileState.education_level;
+    clearError();
+}
+
+function handleEduOtherInput(val) {
+    profileState.education_level = val.trim() || 'Other';
+    document.getElementById('education_level').value = profileState.education_level;
+    clearError();
+}
+
+function toggleMulti(category, itemValue, element) {
+    const targetSet = profileState[category];
+    if (targetSet.has(itemValue)) {
+        targetSet.delete(itemValue);
+        element.classList.remove('chip-active');
+    } else {
+        targetSet.add(itemValue);
+        element.classList.add('chip-active');
+    }
+    clearError();
+}
+
+function addCustomChip(category, inputId, groupContainerId) {
+    const input = document.getElementById(inputId);
+    const val = input.value.trim();
+    if (!val) return;
+
+    if (!profileState[category].has(val)) {
+        profileState[category].add(val);
+        const container = document.getElementById(groupContainerId);
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'toggle-chip chip-active';
+        chip.innerText = val;
+        chip.onclick = function() {
+            toggleMulti(category, val, chip);
+        };
+        container.appendChild(chip);
+    }
+    input.value = '';
+    clearError();
+}
+
+function showError(msg) {
+    const alertDiv = document.getElementById('form-error-alert');
+    const textSpan = document.getElementById('form-error-text');
+    textSpan.innerText = msg;
+    alertDiv.style.display = 'block';
+    alertDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function clearError() {
+    document.getElementById('form-error-alert').style.display = 'none';
+}
+
+async function handleDiscoverySubmit(event) {
+    event.preventDefault();
+
+    // 1. Validation check
+    if (!profileState.education_level) {
+        showError('Please select or specify your Education Level.');
+        return;
+    }
+
+    if (profileState.skills.size === 0 && profileState.interests.size === 0) {
+        showError('Please select at least one Current Skill or Interest to help us map pathways.');
+        return;
+    }
+
+    const additionalInfo = document.getElementById('additional_information').value.trim();
+
+    const payload = {
+        education_level: profileState.education_level,
+        subjects: Array.from(profileState.subjects),
+        skills: Array.from(profileState.skills),
+        interests: Array.from(profileState.interests),
+        work_preferences: Array.from(profileState.work_preferences),
+        career_preferences: Array.from(profileState.career_preferences),
+        additional_information: additionalInfo || null
+    };
+
+    const submitBtn = document.getElementById('btn-submit-discovery');
+    submitBtn.innerText = 'Saving Profile...';
+    submitBtn.disabled = true;
+
+    try {
+        const res = await fetch('/api/profile/discovery', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.status === 'success') {
+            renderSummaryCard(data.student_profile);
+        } else {
+            showError(data.error || 'Failed to submit exploration profile.');
+        }
+    } catch (err) {
+        showError('Network error: ' + err.message);
+    } finally {
+        submitBtn.innerText = 'Continue to Career Discovery \u2192';
+        submitBtn.disabled = false;
+    }
+}
+
+function renderSummaryCard(profile) {
+    const card = document.getElementById('discovery-summary-card');
+    card.style.display = 'block';
+
+    document.getElementById('sum-edu').innerText = profile.education_level || 'Not specified';
+    document.getElementById('sum-skills').innerText = profile.skills && profile.skills.length > 0 ? profile.skills.join(', ') : 'None listed';
+    document.getElementById('sum-interests').innerText = profile.interests && profile.interests.length > 0 ? profile.interests.join(', ') : 'None listed';
+    
+    const combinedPrefs = [
+        ...(profile.work_preferences || []),
+        ...(profile.career_preferences || [])
+    ];
+    document.getElementById('sum-prefs').innerText = combinedPrefs.length > 0 ? combinedPrefs.join(' • ') : 'Standard exploration';
+
+    card.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Prepopulate from session if available
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const res = await fetch('/api/profile/discovery', {
+            headers: { 'Accept': 'application/json' }
+        });
+        const data = await res.json();
+        if (data.is_set && data.student_profile) {
+            const p = data.student_profile;
+            if (p.education_level) {
+                profileState.education_level = p.education_level;
+                // Highlight matching pill
+                const pills = document.querySelectorAll('#edu-chip-group .select-pill');
+                let found = false;
+                pills.forEach(pill => {
+                    if (pill.innerText.trim() === p.education_level) {
+                        pill.classList.add('chip-active');
+                        found = true;
+                    }
+                });
+                if (!found) {
+                    const otherPill = Array.from(pills).find(pi => pi.innerText.trim() === 'Other');
+                    if (otherPill) otherPill.classList.add('chip-active');
+                    document.getElementById('edu-other-container').style.display = 'block';
+                    document.getElementById('edu-other-input').value = p.education_level;
+                }
+                document.getElementById('education_level').value = p.education_level;
+            }
+
+            // Populate multi-select sets
+            ['subjects', 'skills', 'interests', 'work_preferences', 'career_preferences'].forEach(cat => {
+                if (p[cat] && Array.isArray(p[cat])) {
+                    p[cat].forEach(item => {
+                        profileState[cat].add(item);
+                        // Find matching button or create custom
+                        const group = document.getElementById(cat === 'work_preferences' ? 'work-group' : (cat === 'career_preferences' ? 'career-prefs-group' : cat + '-group'));
+                        if (group) {
+                            const btns = group.querySelectorAll('.toggle-chip');
+                            let btnFound = false;
+                            btns.forEach(btn => {
+                                if (btn.innerText.trim() === item) {
+                                    btn.classList.add('chip-active');
+                                    btnFound = true;
+                                }
+                            });
+                            if (!btnFound) {
+                                const chip = document.createElement('button');
+                                chip.type = 'button';
+                                chip.className = 'toggle-chip chip-active';
+                                chip.innerText = item;
+                                chip.onclick = function() { toggleMulti(cat, item, chip); };
+                                group.appendChild(chip);
+                            }
+                        }
+                    });
+                }
+            });
+
+            if (p.additional_information) {
+                document.getElementById('additional_information').value = p.additional_information;
+            }
+
+            renderSummaryCard(p);
+        }
+    } catch(e) {}
+});
+</script>
+{% endblock %}
